@@ -52,6 +52,12 @@ public class ContextMenuAction extends ActionGroup {
         }
         group.add(new RemoveAnnotationAction());
         group.addSeparator();
+        // 引用已注册的ExtractCommentAnnotationAction（保留快捷键配置）
+        AnAction extractAction = com.intellij.openapi.actionSystem.ActionManager.getInstance()
+            .getAction("ChineseAnnotations.ExtractComment");
+        if (extractAction != null) {
+            group.add(extractAction);
+        }
         group.add(new ClearAllAnnotationsAction());
         group.addSeparator();
         group.add(new AddFileMatchAction());

@@ -54,7 +54,6 @@ public final class MappingLibraryService {
             }
         } catch (Exception e) {
             // 如果获取失败，返回默认值
-            LOG.debug("获取内置映射库开关状态失败，使用默认值", e);
         }
         return true; // 默认启用
     }

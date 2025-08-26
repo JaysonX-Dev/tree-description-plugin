@@ -45,7 +45,7 @@ public class JsonEditorListener {
         this.documentListeners = new HashMap<>();
         this.gson = new Gson();
         
-        // 防抖定时器，300ms后执行更新
+        // 防抖定时器，200ms后执行更新
         this.debounceTimer = new Timer(200, e -> {
             performUpdate();
         });
@@ -236,7 +236,7 @@ public class JsonEditorListener {
             return gson.fromJson(jsonContent, LocalMappingFile.class);
         } catch (JsonSyntaxException e) {
             // JSON格式错误时不更新，保持原有备注
-            LOG.debug("JSON格式错误，跳过实时更新: " + e.getMessage());
+            // JSON格式错误，跳过实时更新
             return null;
         }
     }

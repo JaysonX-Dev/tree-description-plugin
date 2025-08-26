@@ -15,7 +15,6 @@ import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-
 public class RemoveAnnotationAction extends AnAction {
     
     @Override
@@ -31,7 +30,6 @@ public class RemoveAnnotationAction extends AnAction {
             handleSingleFile(e, project);
         }
     }
-    
 
     private void handleMultipleFiles(@NotNull AnActionEvent e, @NotNull Project project) {
         VirtualFile[] files = e.getData(CommonDataKeys.VIRTUAL_FILE_ARRAY);
@@ -117,10 +115,17 @@ public class RemoveAnnotationAction extends AnAction {
                 }
             }
             
-            ProjectView.getInstance(project).refresh();
+            // 使用AnnotationService的刷新机制，确保JSON文件和UI同步更新
+            try {
+                java.lang.reflect.Method refreshMethod = annotationService.getClass().getDeclaredMethod("refreshAfterSave");
+                refreshMethod.setAccessible(true);
+                refreshMethod.invoke(annotationService);
+            } catch (Exception ex) {
+                // 如果反射调用失败，回退到基本的项目视图刷新
+                ProjectView.getInstance(project).refresh();
+            }
         }
     }
-    
 
     private void handleSingleFile(@NotNull AnActionEvent e, @NotNull Project project) {
         VirtualFile file = getSelectedFile(e);
@@ -169,7 +174,16 @@ public class RemoveAnnotationAction extends AnAction {
                     annotationService.removeAnnotation(file.getPath());
                 }
             }
-            ProjectView.getInstance(project).refresh();
+            
+            // 使用AnnotationService的刷新机制，确保JSON文件和UI同步更新
+            try {
+                java.lang.reflect.Method refreshMethod = annotationService.getClass().getDeclaredMethod("refreshAfterSave");
+                refreshMethod.setAccessible(true);
+                refreshMethod.invoke(annotationService);
+            } catch (Exception ex) {
+                // 如果反射调用失败，回退到基本的项目视图刷新
+                ProjectView.getInstance(project).refresh();
+            }
         }
     }
     

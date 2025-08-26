@@ -189,12 +189,12 @@ public class RealTimeAnnotationService {
                     livePackageTextColors.putAll(mappings.getPackagesTextColor());
                 }
                 
-                LOG.info("✅ 内存缓存已更新，包含 " + liveFileAnnotations.size() + " 条文件备注，"
+                LOG.info("内存缓存已更新，包含 " + liveFileAnnotations.size() + " 条文件备注，"
                         + livePackageAnnotations.size() + " 条包备注");
             }
         } catch (Exception e) {
             // JSON格式错误时保持原有缓存，不影响显示
-            LOG.warn("⚠️ JSON格式有误，保持当前显示: " + e.getMessage());
+            LOG.warn("JSON格式有误，保持当前显示: " + e.getMessage());
         }
     }
     
@@ -205,7 +205,7 @@ public class RealTimeAnnotationService {
         // 在EDT线程中立即执行UI更新
         ApplicationManager.getApplication().invokeLater(() -> {
             treeRefreshService.refreshProjectView();
-            LOG.info("🔄 项目树UI已刷新");
+            LOG.info("项目树UI已刷新");
         });
     }
     
@@ -217,7 +217,7 @@ public class RealTimeAnnotationService {
         String annotation = liveFileAnnotations.get(normalizeFilePath(filePath));
         
         if (annotation != null) {
-            LOG.debug("📖 从内存缓存读取文件备注: " + annotation);
+
         }
         
         return annotation;
@@ -231,7 +231,7 @@ public class RealTimeAnnotationService {
         String annotation = livePackageAnnotations.get(normalizeFilePath(packagePath));
         
         if (annotation != null) {
-            LOG.debug("📖 从内存缓存读取包备注: " + annotation);
+
         }
         
         return annotation;
@@ -260,12 +260,10 @@ public class RealTimeAnnotationService {
             saveTask.cancel(false);
         }
         
-        // 延迟1000ms保存到磁盘，避免频繁IO和冲突
+        // 延迟保存到磁盘，避免频繁IO和冲突
         saveTask = scheduler.schedule(() -> {
             saveToFileInBackground(document);
-        }, 300, TimeUnit.MILLISECONDS);
-        
-        LOG.debug("📝 已安排后台保存任务");
+        }, 200, TimeUnit.MILLISECONDS);
     }
     
     /**
@@ -274,7 +272,7 @@ public class RealTimeAnnotationService {
     private void saveToFileInBackground(Document document) {
         // 检查是否正在保存，避免重复保存
         if (isSavingInProgress) {
-            LOG.debug("保存操作正在进行中，跳过本次保存");
+
             return;
         }
         
@@ -285,9 +283,9 @@ public class RealTimeAnnotationService {
                     
                     // 使用Document API保存，避免VFS冲突
                     FileDocumentManager.getInstance().saveDocument(document);
-                    LOG.info("💾 文件已在后台保存");
+                    LOG.info("文件已在后台保存");
                 } catch (Exception e) {
-                    LOG.warn("❌ 后台保存失败，但不影响显示: " + e.getMessage());
+                    LOG.warn("后台保存失败，但不影响显示: " + e.getMessage());
                 } finally {
                     isSavingInProgress = false;
                 }

@@ -116,7 +116,7 @@
                 text="项目备注操作" 
                 description="项目备注操作菜单"
                 icon="icons/remark.svg">
-            <add-to-group group-id="ProjectViewPopupMenu" anchor="first" relative-to-action="EditSource"/>
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="EditSource"/>
         </action>
         
         <!-- 工具菜单 -->
@@ -142,6 +142,14 @@
                 text="搜索项目树备注" 
                 description="搜索项目中的所有备注内容">
             <keyboard-shortcut keymap="$default" first-keystroke="alt shift F"/>
+        </action>
+        
+        <!-- 提取注释为备注Action - 支持全局快捷键 -->
+        <action id="ChineseAnnotations.ExtractComment" 
+                class="com.github.annotations.actions.ExtractCommentAnnotationAction"
+                text="提取注释为备注" 
+                description="从Java文件的Javadoc注释中提取第一行作为备注">
+            <keyboard-shortcut keymap="$default" first-keystroke="alt shift E"/>
         </action>
     </actions>
 </idea-plugin>
