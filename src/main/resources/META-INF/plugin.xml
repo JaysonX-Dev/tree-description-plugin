@@ -7,7 +7,7 @@
     <name>Tree Description</name>
     
     <!-- 供应商信息 -->
-    <vendor email="jaysonx.coder@gmail.com" url="https://github.com/JaysonX-Dev">曹智鑫</vendor>
+    <vendor email="jaysonx.coder@gmail.com" url="https://github.com/JaysonX-Dev">Zhixin Cao</vendor>
 
     <!-- 插件描述 -->
     <description><![CDATA[
@@ -21,6 +21,7 @@
             <li>支持备注颜色标记</li>
             <li>全局搜索备注</li>
             <li>支持共享开源映射库</li>
+            <li>支持提取类文件的注释</li>
         </ul>
 
         <h4>适用场景</h4>
@@ -45,6 +46,7 @@
             <li>Color-coded notes</li>
             <li>Global notes search</li>
             <li>Shareable and open-source mapping library</li>
+            <li>Support extracting class file comments</li>
         </ul>
 
         <h4>Use Cases</h4>
@@ -60,9 +62,10 @@
     <!-- 变更日志 -->
     <change-notes><![CDATA[
 
-        <h3>v2.0.0</h3>
+        <h3>v2.1.0</h3>
         <ul>
             <li>支持 GitHub 共享映射库 (Support GitHub shared mapping library)</li>
+            <li>支持提取类文件的注释 (Support extracting class file comments)</li>
         </ul>
 
         <h3>v1.3.0</h3>

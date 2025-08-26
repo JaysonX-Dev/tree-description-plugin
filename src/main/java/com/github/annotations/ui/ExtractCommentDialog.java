@@ -4,7 +4,9 @@ import com.github.annotations.utils.I18nUtils;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
-import com.intellij.ui.components.JBTextField;
+import com.intellij.ui.components.JBLabel;
+import com.intellij.ui.components.JBScrollPane;
+import com.intellij.ui.components.JBTextArea;
 import com.intellij.util.ui.FormBuilder;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
@@ -12,19 +14,18 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 /**
- * 添加备注对话框 - 支持颜色选择
- * 类似 macOS 访达风格的标签颜色
+ * 提取注释为备注对话框 - 支持颜色选择和内容预览
+ * 复用AddAnnotationDialog的颜色选择功能
  */
-public class AddAnnotationDialog extends DialogWrapper {
+public class ExtractCommentDialog extends DialogWrapper {
     
     private final Project project;
-    private final String fileName;
-    private final String initialAnnotation;
-    private final String initialColor;
+    private final List<String> extractedComments;
+    private final int fileCount;
     
-    private JBTextField annotationField;
     private ButtonGroup colorButtonGroup;
     private String selectedColor = "#BBBBBB"; // 默认灰色
     
@@ -40,59 +41,91 @@ public class AddAnnotationDialog extends DialogWrapper {
         new ColorOption("粉色", "#E95573", false)
     };
     
-    public AddAnnotationDialog(@NotNull Project project, @NotNull String fileName, @Nullable String initialAnnotation, @Nullable String initialColor) {
+    public ExtractCommentDialog(@NotNull Project project, @NotNull List<String> extractedComments, int fileCount) {
         super(project);
         this.project = project;
-        this.fileName = fileName;
-        this.initialAnnotation = initialAnnotation != null ? initialAnnotation : "";
-        this.initialColor = initialColor != null && isValidColor(initialColor) ? initialColor : "#BBBBBB";
+        this.extractedComments = extractedComments;
+        this.fileCount = fileCount;
         
-        setTitle(I18nUtils.getText(project, "添加备注", "Add Annotation"));
-        setSize(480, 180);
+        setTitle(I18nUtils.getText(project, "提取注释为备注", "Extract Comment as Remark"));
+        setSize(400, 200);
         init();
     }
     
     @Override
     protected @Nullable JComponent createCenterPanel() {
         JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBorder(JBUI.Borders.empty(15));
+        mainPanel.setBorder(JBUI.Borders.empty(10));
         
         // 创建表单
         JPanel formPanel = FormBuilder.createFormBuilder()
-                .addLabeledComponent(I18nUtils.getText(project, "为 \"" + fileName + "\" 添加备注:", "Add annotation for \"" + fileName + "\":"), createAnnotationField())
-                .addVerticalGap(15)
+                .addLabeledComponent(createInfoLabel(), createContentPreview())
+                .addVerticalGap(8)
                 .addLabeledComponent(I18nUtils.getText(project, "备注颜色:", "Annotation Color:"), createColorPanel())
-                .addComponentFillVertically(new JPanel(), 0)
                 .getPanel();
         
         mainPanel.add(formPanel, BorderLayout.CENTER);
         return mainPanel;
     }
     
-    private JComponent createAnnotationField() {
-        annotationField = new JBTextField(initialAnnotation);
-        annotationField.setPreferredSize(new Dimension(350, 30));
-        annotationField.setToolTipText(I18nUtils.getText(project, "输入备注内容", "Enter annotation content"));
+    private JComponent createInfoLabel() {
+        String labelText;
+        if (fileCount == 1) {
+            labelText = I18nUtils.getText(project, "提取类文件备注:", "Extract Class Annotation:");
+        } else {
+            labelText = I18nUtils.getText(project, 
+                String.format("%d 个备注:", fileCount),
+                String.format("Annotation for %d files:", fileCount));
+        }
+        return new JBLabel(labelText);
+    }
+    
+    private JComponent createContentPreview() {
+        JBTextArea textArea = new JBTextArea();
+        textArea.setEditable(false);
+        textArea.setBackground(UIManager.getColor("Panel.background"));
+        textArea.setFont(UIManager.getFont("Label.font"));
+        textArea.setBorder(JBUI.Borders.empty(6));
         
-        // 添加文档监听器用于验证
-        annotationField.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
-            @Override
-            public void insertUpdate(javax.swing.event.DocumentEvent e) { validateInput(); }
-            @Override
-            public void removeUpdate(javax.swing.event.DocumentEvent e) { validateInput(); }
-            @Override
-            public void changedUpdate(javax.swing.event.DocumentEvent e) { validateInput(); }
-        });
+        StringBuilder content = new StringBuilder();
+        if (extractedComments.size() == 1) {
+            // 单个文件，显示提取的注释内容
+            content.append(extractedComments.get(0));
+        } else {
+            // 多个文件，显示文件数量和部分内容预览
+            content.append(I18nUtils.getText(project, 
+                String.format("共找到 %d 个文件的注释:\n\n", extractedComments.size()),
+                String.format("Found comments in %d files:\n\n", extractedComments.size())));
+            
+            int previewCount = Math.min(3, extractedComments.size());
+            for (int i = 0; i < previewCount; i++) {
+                content.append("• ").append(extractedComments.get(i)).append("\n");
+            }
+            
+            if (extractedComments.size() > 3) {
+                content.append(I18nUtils.getText(project, 
+                    String.format("... 还有 %d 个文件", extractedComments.size() - 3),
+                    String.format("... and %d more files", extractedComments.size() - 3)));
+            }
+        }
         
-        return annotationField;
+        textArea.setText(content.toString());
+        textArea.setCaretPosition(0);
+        
+        JBScrollPane scrollPane = new JBScrollPane(textArea);
+        scrollPane.setPreferredSize(new Dimension(450, 35));
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        
+        return scrollPane;
     }
     
     private JComponent createColorPanel() {
         JPanel colorPanel = new JPanel();
         
         // 使用GridLayout精确控制间距，1行8列
-        colorPanel.setLayout(new GridLayout(1, 8, 6, 0));
-        colorPanel.setBorder(JBUI.Borders.empty(5));
+        colorPanel.setLayout(new GridLayout(1, 8, 4, 0));
+        colorPanel.setBorder(JBUI.Borders.empty(3));
         
         colorButtonGroup = new ButtonGroup();
         
@@ -101,9 +134,8 @@ public class AddAnnotationDialog extends DialogWrapper {
             colorButtonGroup.add(colorButton);
             colorPanel.add(colorButton);
             
-            // 根据初始颜色或默认颜色设置选中状态
-            if ((initialColor != null && colorOption.colorCode.equals(initialColor)) || 
-                (initialColor == null && colorOption.isDefault)) {
+            // 默认选中灰色
+            if (colorOption.isDefault) {
                 colorButton.setSelected(true);
                 selectedColor = colorOption.colorCode;
             }
@@ -114,7 +146,7 @@ public class AddAnnotationDialog extends DialogWrapper {
     
     private JRadioButton createColorButton(ColorOption colorOption) {
         JRadioButton button = new JRadioButton();
-        button.setPreferredSize(new Dimension(40, 28));
+        button.setPreferredSize(new Dimension(36, 24));
         button.setToolTipText(getColorName(colorOption.name) + " " + colorOption.colorCode);
         
         // 自定义渲染颜色圆点
@@ -161,31 +193,12 @@ public class AddAnnotationDialog extends DialogWrapper {
         return button;
     }
     
-    private void validateInput() {
-        setOKActionEnabled(!annotationField.getText().trim().isEmpty());
-    }
-    
-    @Override
-    protected void doOKAction() {
-        super.doOKAction();
-    }
-    
     @Override
     protected ValidationInfo doValidate() {
-        String annotation = annotationField.getText().trim();
-        
-        if (annotation.isEmpty()) {
-            return new ValidationInfo(I18nUtils.getText(project, "请输入备注内容", "Please enter annotation content"), annotationField);
+        if (extractedComments.isEmpty()) {
+            return new ValidationInfo(I18nUtils.getText(project, "没有找到可提取的注释", "No extractable comments found"));
         }
-        
         return null;
-    }
-    
-    /**
-     * 获取输入的备注
-     */
-    public String getAnnotation() {
-        return annotationField.getText().trim();
     }
     
     /**
@@ -200,19 +213,6 @@ public class AddAnnotationDialog extends DialogWrapper {
      */
     public boolean isDefaultColor() {
         return "#BBBBBB".equals(selectedColor);
-    }
-    
-    /**
-     * 验证颜色是否在预定义颜色列表中
-     */
-    private boolean isValidColor(String colorCode) {
-        if (colorCode == null) return false;
-        for (ColorOption option : COLOR_OPTIONS) {
-            if (option.colorCode.equals(colorCode)) {
-                return true;
-            }
-        }
-        return false;
     }
     
     /**
