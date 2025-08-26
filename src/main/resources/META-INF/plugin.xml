@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<idea-plugin>
+    <!-- 插件 ID，必须唯一 -->
+    <id>com.github.tree-description</id>
+    
+    <!-- 插件名称 -->
+    <name>Tree Description</name>
+    
+    <!-- 供应商信息 -->
+    <vendor email="jaysonx.coder@gmail.com" url="https://github.com/JaysonX-Dev">曹智鑫</vendor>
+
+    <!-- 插件描述 -->
+    <description><![CDATA[
+        <h3>项目树备注工具</h3>
+        <p><b>项目树备注工具</b> 是一个轻量级插件，帮助开发者在 IntelliJ IDEA 中快速记录和管理目录或文件备注。</p>
+
+        <h4>主要特性</h4>
+        <ul>
+            <li>支持中英文界面切换</li>
+            <li>在类 / 方法 / 文件上添加备注</li>
+            <li>支持备注颜色标记</li>
+            <li>全局搜索备注</li>
+            <li>支持共享开源映射库</li>
+        </ul>
+
+        <h4>适用场景</h4>
+        <ul>
+            <li><b>阅读 Apache 项目</b>：更好理解 Kafka、Dubbo 等大型项目复杂包结构</li>
+            <li><b>团队知识传承</b>：快速理解和维护老项目</li>
+            <li><b>代码 Review</b>：更直观的结构说明，快速定位代码</li>
+        </ul>
+
+        <p>让你的开发过程更高效 🚀</p>
+
+        <br/>
+        <hr/>
+
+        <h3>Project Tree Notes</h3>
+        <p><b>Project Tree Notes</b> is a lightweight plugin that helps developers quickly record and manage notes for directories or files in IntelliJ IDEA.</p>
+
+        <h4>Key Features</h4>
+        <ul>
+            <li>Support for Chinese/English interface switching</li>
+            <li>Add notes on classes / methods / files</li>
+            <li>Color-coded notes</li>
+            <li>Global notes search</li>
+            <li>Shareable and open-source mapping library</li>
+        </ul>
+
+        <h4>Use Cases</h4>
+        <ul>
+            <li><b>Reading Apache projects</b>: Better understanding of complex structures in projects like Kafka, Dubbo</li>
+            <li><b>Team knowledge transfer</b>: Faster onboarding and understanding of legacy projects</li>
+            <li><b>Code review</b>: Clearer structure explanations, faster code navigation</li>
+        </ul>
+
+        <p>Make your development more efficient. 🚀</p>
+    ]]></description>
+    
+    <!-- 变更日志 -->
+    <change-notes><![CDATA[
+
+        <h3>v2.0.0</h3>
+        <ul>
+            <li>支持 GitHub 共享映射库 (Support GitHub shared mapping library)</li>
+        </ul>
+
+        <h3>v1.3.0</h3>
+        <ul>
+            <li>增加全局快捷键配置 (Added global shortcut key configuration)</li>
+            <li>添加备注快捷键：Shift + Alt + A (Note shortcut: Shift + Alt + A)</li>
+            <li>搜索备注快捷键：Shift + Alt + F (Search shortcut: Shift + Alt + F)</li>
+        </ul>
+
+        <h3>v1.2.0</h3>
+        <ul>
+            <li>支持备注颜色选择 (Support for note color selection)</li>
+            <li>支持备注搜索功能 (Support for note search)</li>
+        </ul>
+
+        <h3>v1.0.0</h3>
+        <ul>
+            <li>初始版本 (Initial release)</li>
+        </ul>
+    ]]></change-notes>
+    
+    <!-- 最低和最高支持版本 -->
+    <idea-version since-build="231" until-build="243.*"/>
+    
+    <!-- 插件依赖 -->
+    <depends>com.intellij.modules.platform</depends>
+    
+    <!-- 扩展点 -->
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- 项目服务 -->
+        <projectService serviceImplementation="com.github.annotations.services.AnnotationService"/>
+        
+        <!-- 项目启动监听器 -->
+        <projectManagerListener implementation="com.github.annotations.services.AnnotationService$ProjectStartupListener"/>
+        
+        <!-- 应用服务 -->
+        <applicationService serviceImplementation="com.github.annotations.services.MappingLibraryService"/>
+        
+        <!-- 项目树装饰器 -->
+        <projectViewNodeDecorator implementation="com.github.annotations.decorators.AnnotationDecorator"/>
+        
+        <!-- 设置页面 -->
+        <projectConfigurable instance="com.github.annotations.settings.AnnotationConfigurable"/>
+    </extensions>
+    
+    <!-- 操作（Actions） -->
+    <actions>
+        <!-- 路径备注设置主菜单组 -->
+        <action id="ChineseAnnotations.ContextMenu" 
+                class="com.github.annotations.actions.ContextMenuAction"
+                text="项目备注操作" 
+                description="项目备注操作菜单"
+                icon="icons/remark.svg">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="first" relative-to-action="EditSource"/>
+        </action>
+        
+        <!-- 工具菜单 -->
+        <action id="ChineseAnnotations.ToolsMenu" 
+                class="com.github.annotations.actions.ToolsMenuAction"
+                text="备注工具" 
+                description="路径备注工具菜单"
+                icon="icons/remark.svg">
+            <add-to-group group-id="ToolsMenu" anchor="first"/>
+        </action>
+        
+        <!-- 添加备注Action - 支持全局快捷键 -->
+        <action id="ChineseAnnotations.AddAnnotation" 
+                class="com.github.annotations.actions.AddAnnotationAction"
+                text="添加备注" 
+                description="为选中的文件或目录添加备注">
+            <keyboard-shortcut keymap="$default" first-keystroke="alt shift A"/>
+        </action>
+        
+        <!-- 搜索备注Action - 支持全局快捷键 -->
+        <action id="ChineseAnnotations.SearchAnnotations" 
+                class="com.github.annotations.actions.SearchAnnotationsAction"
+                text="搜索项目树备注" 
+                description="搜索项目中的所有备注内容">
+            <keyboard-shortcut keymap="$default" first-keystroke="alt shift F"/>
+        </action>
+    </actions>
+</idea-plugin>
