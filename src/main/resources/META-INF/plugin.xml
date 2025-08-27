@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <idea-plugin>
     <!-- 插件 ID，必须唯一 -->
-    <id>com.github.tree-description</id>
+    <id>com.github.chinese-annotations</id>
     
     <!-- 插件名称 -->
     <name>Tree Description</name>
@@ -10,53 +10,55 @@
     <vendor email="jaysonx.coder@gmail.com" url="https://github.com/JaysonX-Dev">Zhixin Cao</vendor>
 
     <!-- 插件描述 -->
+<!-- 插件描述 -->
     <description><![CDATA[
-        <h3>项目树备注工具</h3>
-        <p><b>项目树备注工具</b> 是一个轻量级插件，帮助开发者在 IntelliJ IDEA 中快速记录和管理目录或文件备注。</p>
+    Tree Description - A lightweight tool for adding notes to your project tree in IntelliJ IDEA.
 
-        <h4>主要特性</h4>
-        <ul>
-            <li>支持中英文界面切换</li>
-            <li>在类 / 方法 / 文件上添加备注</li>
-            <li>支持备注颜色标记</li>
-            <li>全局搜索备注</li>
-            <li>支持共享开源映射库</li>
-            <li>支持提取类文件的注释</li>
-        </ul>
+    <h3>项目树备注工具</h3>
+    <p><b>项目树备注工具</b> 是一个轻量级插件，帮助开发者在 IntelliJ IDEA 中快速记录和管理目录或文件备注。</p>
 
-        <h4>适用场景</h4>
-        <ul>
-            <li><b>阅读 Apache 项目</b>：更好理解 Kafka、Dubbo 等大型项目复杂包结构</li>
-            <li><b>团队知识传承</b>：快速理解和维护老项目</li>
-            <li><b>代码 Review</b>：更直观的结构说明，快速定位代码</li>
-        </ul>
+    <h4>主要特性</h4>
+    <ul>
+        <li>支持中英文界面切换</li>
+        <li>在类 / 方法 / 文件上添加备注</li>
+        <li>支持备注颜色标记</li>
+        <li>全局搜索备注</li>
+        <li>支持共享开源映射库</li>
+        <li>支持提取类文件的注释</li>
+    </ul>
 
-        <p>让你的开发过程更高效 🚀</p>
+    <h4>适用场景</h4>
+    <ul>
+        <li><b>阅读 Apache 项目</b>：更好理解 Kafka、Dubbo 等大型项目复杂包结构</li>
+        <li><b>团队知识传承</b>：快速理解和维护老项目</li>
+        <li><b>代码 Review</b>：更直观的结构说明，快速定位代码</li>
+    </ul>
 
-        <br/>
-        <hr/>
+    <p>让你的开发过程更高效 🚀</p>
 
-        <h3>Project Tree Notes</h3>
-        <p><b>Project Tree Notes</b> is a lightweight plugin that helps developers quickly record and manage notes for directories or files in IntelliJ IDEA.</p>
+    <hr/>
 
-        <h4>Key Features</h4>
-        <ul>
-            <li>Support for Chinese/English interface switching</li>
-            <li>Add notes on classes / methods / files</li>
-            <li>Color-coded notes</li>
-            <li>Global notes search</li>
-            <li>Shareable and open-source mapping library</li>
-            <li>Support extracting class file comments</li>
-        </ul>
+    <h3>Project Tree Notes</h3>
+    <p><b>Project Tree Notes</b> is a lightweight plugin that helps developers quickly record and manage notes for directories or files in IntelliJ IDEA.</p>
 
-        <h4>Use Cases</h4>
-        <ul>
-            <li><b>Reading Apache projects</b>: Better understanding of complex structures in projects like Kafka, Dubbo</li>
-            <li><b>Team knowledge transfer</b>: Faster onboarding and understanding of legacy projects</li>
-            <li><b>Code review</b>: Clearer structure explanations, faster code navigation</li>
-        </ul>
+    <h4>Key Features</h4>
+    <ul>
+        <li>Support for Chinese/English interface switching</li>
+        <li>Add notes on classes / methods / files</li>
+        <li>Color-coded notes</li>
+        <li>Global notes search</li>
+        <li>Shareable and open-source mapping library</li>
+        <li>Support extracting class file comments</li>
+    </ul>
 
-        <p>Make your development more efficient. 🚀</p>
+    <h4>Use Cases</h4>
+    <ul>
+        <li><b>Reading Apache projects</b>: Better understanding of complex structures in projects like Kafka, Dubbo</li>
+        <li><b>Team knowledge transfer</b>: Faster onboarding and understanding of legacy projects</li>
+        <li><b>Code review</b>: Clearer structure explanations, faster code navigation</li>
+    </ul>
+
+    <p>Make your development more efficient. 🚀</p>
     ]]></description>
     
     <!-- 变更日志 -->

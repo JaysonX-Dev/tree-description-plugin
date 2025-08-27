@@ -37,6 +37,27 @@ tasks {
         kotlinOptions.jvmTarget = "17"
     }
 
+    // 优化 runIde 任务性能
+    runIde {
+        jvmArgs = listOf(
+            "-Xmx3072m",
+            "-XX:MaxMetaspaceSize=512m",
+            "-XX:+UseG1GC",
+            "-XX:+UseStringDeduplication",
+            "-Didea.ProcessCanceledException=disabled",
+            "-Didea.debug.mode=true",
+            "-Didea.system.path=${System.getProperty("java.io.tmpdir")}/idea-sandbox-system",
+            "-Didea.config.path=${System.getProperty("java.io.tmpdir")}/idea-sandbox-config",
+            "-Didea.plugins.path=${System.getProperty("java.io.tmpdir")}/idea-sandbox-plugins",
+            "-Didea.log.path=${System.getProperty("java.io.tmpdir")}/idea-sandbox-logs"
+        )
+    }
+
+    // 优化构建性能
+    buildSearchableOptions {
+        enabled = false  // 禁用搜索选项构建以加快速度
+    }
+
     patchPluginXml {
         sinceBuild.set("231")
         untilBuild.set("243.*")  // 支持到2024.3版本

@@ -24,14 +24,20 @@ public class AddFileMatchDialog extends DialogWrapper {
     
     private final Project project;
     private final AnnotationService annotationService;
+    private final String defaultFileName;
     
     private JBTextField patternField;
     private JBTextField descriptionField;
     
     public AddFileMatchDialog(@NotNull Project project) {
+        this(project, null);
+    }
+    
+    public AddFileMatchDialog(@NotNull Project project, @Nullable String defaultFileName) {
         super(project);
         this.project = project;
         this.annotationService = AnnotationService.getInstance(project);
+        this.defaultFileName = defaultFileName;
         
         setTitle(I18nUtils.getText(project, "添加文件匹配映射", "Add File Match Mapping"));
         setSize(540, 200);
@@ -60,6 +66,12 @@ public class AddFileMatchDialog extends DialogWrapper {
     
     private JComponent createPatternField() {
         patternField = new JBTextField();
+        
+        // 如果提供了默认文件名，设置到输入框中
+        if (defaultFileName != null && !defaultFileName.trim().isEmpty()) {
+            patternField.setText(defaultFileName);
+        }
+        
         patternField.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
             @Override
             public void insertUpdate(javax.swing.event.DocumentEvent e) { validateInput(); }
@@ -68,6 +80,12 @@ public class AddFileMatchDialog extends DialogWrapper {
             @Override
             public void changedUpdate(javax.swing.event.DocumentEvent e) { validateInput(); }
         });
+        
+        // 如果设置了默认值，需要触发验证
+        if (defaultFileName != null && !defaultFileName.trim().isEmpty()) {
+            SwingUtilities.invokeLater(this::validateInput);
+        }
+        
         return patternField;
     }
     
@@ -123,15 +141,21 @@ public class AddFileMatchDialog extends DialogWrapper {
             return;
         }
         
-        // 检查是否已存在相同的模式
+        // 如果模式以*.开头，去掉*.前缀进行保存
+        String savePattern = pattern;
+        if (pattern.startsWith("*.")) {
+            savePattern = pattern.substring(2);
+        }
+        
+        // 检查是否已存在相同的模式（使用保存时的模式进行检查）
         Map<String, String> existingPatterns = annotationService.getAllFileMatchAnnotations();
-        if (existingPatterns.containsKey(pattern)) {
-            // 如果已存在，询问是否覆盖
+        if (existingPatterns.containsKey(savePattern)) {
+            // 如果已存在，询问是否覆盖（显示保存时的模式）
             int result = JOptionPane.showConfirmDialog(
                 getContentPane(),
                 I18nUtils.getText(project, 
-                    "文件匹配模式 \"" + pattern + "\" 已存在，是否覆盖？",
-                    "File match pattern \"" + pattern + "\" already exists, do you want to overwrite it?"),
+                    "文件匹配模式 \"" + savePattern + "\" 已存在，是否覆盖？",
+                    "File match pattern \"" + savePattern + "\" already exists, do you want to overwrite it?"),
                 I18nUtils.getText(project, "确认覆盖", "Confirm Overwrite"),
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.PLAIN_MESSAGE
@@ -142,8 +166,18 @@ public class AddFileMatchDialog extends DialogWrapper {
             }
         }
         
-        // 保存到AnnotationService
-        annotationService.setFileMatchAnnotation(pattern, description);
+        // 保存到AnnotationService（使用去掉*.前缀的模式）
+        annotationService.setFileMatchAnnotation(savePattern, description);
+        
+        // 调用刷新机制，确保JSON文件和UI同步更新
+        try {
+            java.lang.reflect.Method refreshMethod = annotationService.getClass().getDeclaredMethod("refreshAfterSave");
+            refreshMethod.setAccessible(true);
+            refreshMethod.invoke(annotationService);
+        } catch (Exception ex) {
+            // 如果反射调用失败，回退到基本的项目视图刷新
+            com.intellij.ide.projectView.ProjectView.getInstance(project).refresh();
+        }
         
         super.doOKAction();
     }

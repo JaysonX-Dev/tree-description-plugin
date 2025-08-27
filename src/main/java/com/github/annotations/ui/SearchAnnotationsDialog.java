@@ -389,9 +389,9 @@ public class SearchAnnotationsDialog extends DialogWrapper {
                     // 递归搜索子目录
                     findFilesMatchingPatternRecursive(child, pattern, matchedFiles);
                 } else {
-                    // 检查文件名是否匹配pattern
+                    // 检查文件名是否匹配pattern - 使用完全匹配而不是包含匹配
                     String fileName = child.getName();
-                    if (fileName.toLowerCase().contains(pattern.toLowerCase())) {
+                    if (fileName.equalsIgnoreCase(pattern)) {
                         // 获取相对于项目根目录的路径
                         String relativePath = getRelativePath(project.getBaseDir(), child);
                         if (relativePath != null) {
@@ -433,9 +433,9 @@ public class SearchAnnotationsDialog extends DialogWrapper {
         try {
             for (VirtualFile child : directory.getChildren()) {
                 if (child.isDirectory()) {
-                    // 检查目录名是否匹配pattern
+                    // 检查目录名是否匹配pattern - 使用完全匹配而不是包含匹配
                     String dirName = child.getName();
-                    if (dirName.toLowerCase().contains(pattern.toLowerCase())) {
+                    if (dirName.equalsIgnoreCase(pattern)) {
                         // 获取相对于项目根目录的路径
                         String relativePath = getRelativePath(project.getBaseDir(), child);
                         if (relativePath != null) {

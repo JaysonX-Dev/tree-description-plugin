@@ -24,14 +24,20 @@ public class AddPackageMatchDialog extends DialogWrapper {
     
     private final Project project;
     private final AnnotationService annotationService;
+    private final String defaultFolderName;
     
     private JBTextField patternField;
     private JBTextField descriptionField;
     
     public AddPackageMatchDialog(@NotNull Project project) {
+        this(project, null);
+    }
+    
+    public AddPackageMatchDialog(@NotNull Project project, @Nullable String defaultFolderName) {
         super(project);
         this.project = project;
         this.annotationService = AnnotationService.getInstance(project);
+        this.defaultFolderName = defaultFolderName;
         
         setTitle(I18nUtils.getText(project, "添加路径匹配映射", "Add Package Match Mapping"));
         setSize(540, 200);
@@ -60,6 +66,12 @@ public class AddPackageMatchDialog extends DialogWrapper {
     
     private JComponent createPatternField() {
         patternField = new JBTextField();
+        
+        // 如果有默认文件夹名称，预填充到文本框中
+        if (defaultFolderName != null && !defaultFolderName.isEmpty()) {
+            patternField.setText(defaultFolderName);
+        }
+        
         patternField.setToolTipText(I18nUtils.getText(project, "输入包名匹配模式，如：controller、service、dao等", "Enter package match pattern, e.g.: controller, service, dao"));
         patternField.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
             @Override
@@ -124,15 +136,21 @@ public class AddPackageMatchDialog extends DialogWrapper {
             return;
         }
         
-        // 检查是否已存在相同的模式
+        // 如果模式以*.开头，去掉*.前缀进行保存
+        String savePattern = pattern;
+        if (pattern.startsWith("*.")) {
+            savePattern = pattern.substring(2);
+        }
+        
+        // 检查是否已存在相同的模式（使用保存时的模式进行检查）
         Map<String, String> existingPatterns = annotationService.getAllPackageMatchAnnotations();
-        if (existingPatterns.containsKey(pattern)) {
-            // 如果已存在，询问是否覆盖
+        if (existingPatterns.containsKey(savePattern)) {
+            // 如果已存在，询问是否覆盖（显示保存时的模式）
             int result = JOptionPane.showConfirmDialog(
                 getContentPane(),
                 I18nUtils.getText(project, 
-                    "包匹配模式 \"" + pattern + "\" 已存在，是否覆盖？",
-                    "Package match pattern \"" + pattern + "\" already exists, do you want to overwrite it?"),
+                    "包匹配模式 \"" + savePattern + "\" 已存在，是否覆盖？",
+                    "Package match pattern \"" + savePattern + "\" already exists, do you want to overwrite it?"),
                 I18nUtils.getText(project, "确认覆盖", "Confirm Overwrite"),
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.PLAIN_MESSAGE
@@ -143,8 +161,18 @@ public class AddPackageMatchDialog extends DialogWrapper {
             }
         }
         
-        // 保存到AnnotationService
-        annotationService.setPackageMatchAnnotation(pattern, description);
+        // 保存到AnnotationService（使用去掉*.前缀的模式）
+        annotationService.setPackageMatchAnnotation(savePattern, description);
+        
+        // 调用刷新机制，确保JSON文件和UI同步更新
+        try {
+            java.lang.reflect.Method refreshMethod = annotationService.getClass().getDeclaredMethod("refreshAfterSave");
+            refreshMethod.setAccessible(true);
+            refreshMethod.invoke(annotationService);
+        } catch (Exception ex) {
+            // 如果反射调用失败，回退到基本的项目视图刷新
+            com.intellij.ide.projectView.ProjectView.getInstance(project).refresh();
+        }
         
         super.doOKAction();
     }

@@ -30,8 +30,8 @@ public class GitHubMappingService {
     // 多镜像源配置
     private static final String[] MIRROR_URLS = {
         "https://raw.githubusercontent.com",
-        "https://cdn.statically.io",
-        "https://raw.githack.com"
+        "https://hub.gitmirror.com/raw.githubusercontent.com",
+        "https://cdn.statically.io"
     };
     
     private static final String REPO_OWNER = "JaysonX-Dev";

@@ -77,7 +77,7 @@ public class AnnotationDecorator implements ProjectViewNodeDecorator {
                 String textColor = getTextColorForFile(project, file, annotation);
                 SimpleTextAttributes annotationAttributes = getAnnotationAttributesWithColor(textColor);
                 
-                data.addText(" (" + annotation + ")", annotationAttributes);
+                data.addText("  " + annotation, annotationAttributes);
             }
         }
     }

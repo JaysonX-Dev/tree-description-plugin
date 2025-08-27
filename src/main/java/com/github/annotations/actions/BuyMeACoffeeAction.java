@@ -32,22 +32,22 @@ public class BuyMeACoffeeAction extends AnAction {
                 if (service != null) {
                     String currentLanguage = service.getLanguage();
                     if ("en".equals(currentLanguage)) {
-                        e.getPresentation().setText("☕ Buy me a coffee");
+                        e.getPresentation().setText("Buy me a coffee ☕");
                         e.getPresentation().setDescription("Support developer, buy a coffee");
                     } else {
-                        e.getPresentation().setText("☕ Buy me a coffee");
+                        e.getPresentation().setText("Buy me a coffee ☕");
                         e.getPresentation().setDescription("支持开发者，买杯咖啡");
                     }
                 } else {
-                    e.getPresentation().setText("☕ Buy me a coffee");
+                    e.getPresentation().setText("Buy me a coffee ☕");
                     e.getPresentation().setDescription("支持开发者，买杯咖啡");
                 }
             } catch (Exception ex) {
-                e.getPresentation().setText("☕ Buy me a coffee");
+                e.getPresentation().setText("Buy me a coffee ☕");
                 e.getPresentation().setDescription("支持开发者，买杯咖啡");
             }
         } else {
-            e.getPresentation().setText("☕ Buy me a coffee");
+            e.getPresentation().setText("Buy me a coffee ☕");
             e.getPresentation().setDescription("支持开发者，买杯咖啡");
         }
     }

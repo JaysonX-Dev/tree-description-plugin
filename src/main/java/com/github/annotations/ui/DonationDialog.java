@@ -30,7 +30,7 @@ public class DonationDialog extends DialogWrapper {
         super(project);
         this.project = project;
         
-        setTitle(I18nUtils.getText(project, "☕ 请我喝咖啡", "☕ Buy me a coffee"));
+        setTitle(I18nUtils.getText(project, "请我喝咖啡 ☕", "Buy me a coffee ☕"));
         setSize(650, 450);
         setResizable(false);
         init();

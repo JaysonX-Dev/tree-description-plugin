@@ -3,7 +3,9 @@ package com.github.annotations.actions;
 import com.github.annotations.ui.AddPackageMatchDialog;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -16,7 +18,14 @@ public class AddPackageMatchAction extends AnAction {
             return;
         }
         
-        AddPackageMatchDialog dialog = new AddPackageMatchDialog(project);
+        // 获取当前选中的文件夹名称，并添加*.前缀用于界面显示
+        String currentFolderName = null;
+        VirtualFile selectedFile = e.getData(CommonDataKeys.VIRTUAL_FILE);
+        if (selectedFile != null && selectedFile.isDirectory()) {
+            currentFolderName = "*." + selectedFile.getName();
+        }
+        
+        AddPackageMatchDialog dialog = new AddPackageMatchDialog(project, currentFolderName);
         if (dialog.showAndGet()) {
         }
     }
