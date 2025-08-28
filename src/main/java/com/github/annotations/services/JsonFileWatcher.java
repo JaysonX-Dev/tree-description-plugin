@@ -13,11 +13,11 @@ import java.util.List;
 
 /**
  * JSON文件监听器
- * 监听IDEA内部对mappings目录下所有JSON文件的修改，实时更新备注显示
+ * 监听IDEA内部对.td-maps目录下所有JSON文件的修改，实时更新备注显示
  */
 public class JsonFileWatcher implements BulkFileListener {
     
-    private static final String MAPPINGS_DIR_NAME = "mappings";
+    private static final String MAPPINGS_DIR_NAME = ".td-maps";
     
     private final Project project;
     private final AnnotationService annotationService;
@@ -52,7 +52,7 @@ public class JsonFileWatcher implements BulkFileListener {
     }
     
     /**
-     * 检查是否是mappings目录下的JSON文件
+     * 检查是否是.td-maps目录下的JSON文件
      */
     private boolean isOurJsonFile(@NotNull VirtualFile file) {
         if (file == null || !file.exists() || !file.getName().endsWith(".json")) {

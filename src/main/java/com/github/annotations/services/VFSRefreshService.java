@@ -36,13 +36,13 @@ public class VFSRefreshService {
     }
     
     /**
-     * 刷新整个mappings目录
+     * 刷新整个.td-maps目录
      */
     public void refreshMappingsDirectory() {
         try {
             String basePath = project.getBasePath();
             if (basePath != null) {
-                String mappingsPath = basePath + "/mappings";
+                String mappingsPath = basePath + "/.td-maps";
                 VirtualFile mappingsDir = LocalFileSystem.getInstance()
                     .refreshAndFindFileByPath(mappingsPath);
                 if (mappingsDir != null) {
@@ -51,7 +51,7 @@ public class VFSRefreshService {
             }
         } catch (Exception e) {
             com.intellij.openapi.diagnostic.Logger.getInstance(VFSRefreshService.class)
-                .warn("刷新mappings目录失败: " + e.getMessage());
+                .warn("刷新.td-maps目录失败: " + e.getMessage());
         }
     }
 }

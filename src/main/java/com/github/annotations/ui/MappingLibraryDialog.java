@@ -339,12 +339,12 @@ public class MappingLibraryDialog extends DialogWrapper {
         // 显示确认对话框
         int result = JOptionPane.showConfirmDialog(getContentPane(), 
             I18nUtils.getText(project,
-                "确定要将 \"" + selectedFile.displayName + "\" 下载到本地 mappings 文件夹吗？\n\n" +
+                "确定要将 \"" + selectedFile.displayName + "\" 下载到本地 .td-maps 文件夹吗？\n\n" +
                 "文件将保存为: " + selectedFile.displayName + "\n" +
-                "保存位置: 项目根目录/mappings/",
-                "Are you sure you want to download \"" + selectedFile.displayName + "\" to the local mappings folder?\n\n" +
+                "保存位置: 项目根目录/.td-maps/",
+            "Are you sure you want to download \"" + selectedFile.displayName + "\" to the local .td-maps folder?\n\n" +
                 "File will be saved as: " + selectedFile.displayName + "\n" +
-                "Save location: project root/mappings/"), 
+                "Save location: project root/.td-maps/"), 
             I18nUtils.getText(project, "下载确认", "Download Confirmation"), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);
         
         if (result != JOptionPane.YES_OPTION) {
@@ -380,9 +380,9 @@ public class MappingLibraryDialog extends DialogWrapper {
                             JOptionPane.showMessageDialog(getContentPane(), 
                                 I18nUtils.getText(project,
                                     "下载成功！\n\n" +
-                                    "文件已保存到: mappings/" + fileName + "\n",
+                                    "文件已保存到: .td-maps/" + fileName + "\n",
                                     "Download successful!\n\n" +
-                                    "File saved to: mappings/" + fileName + "\n"), 
+                                    "File saved to: .td-maps/" + fileName + "\n"), 
                                 I18nUtils.getText(project, "下载成功！", "Download Successful!"), JOptionPane.PLAIN_MESSAGE);
                         } else {
                             JOptionPane.showMessageDialog(getContentPane(), 
@@ -424,7 +424,7 @@ public class MappingLibraryDialog extends DialogWrapper {
     }
     
     /**
-     * 保存映射库到本地mappings文件夹
+     * 保存映射库到本地.td-maps文件夹
      */
     private boolean saveToLocalMappings(String fileName, String jsonContent) {
         try {
@@ -432,7 +432,7 @@ public class MappingLibraryDialog extends DialogWrapper {
                 return false;
             }
             
-            java.io.File mappingsDir = new java.io.File(project.getBasePath(), "mappings");
+            java.io.File mappingsDir = new java.io.File(project.getBasePath(), ".td-maps");
             if (!mappingsDir.exists()) {
                 if (!mappingsDir.mkdirs()) {
                     return false;

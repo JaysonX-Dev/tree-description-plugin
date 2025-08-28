@@ -106,10 +106,10 @@ public class AddPackageMatchDialog extends DialogWrapper {
         JTextArea helpText = new JTextArea();
         helpText.setText(I18nUtils.getText(project,
             "• 会匹配映射所对应的目录上\n" +
-            "• 映射保存位置：项目根目录/mappings/local-description.json\n" +
+            "• 映射保存位置：项目根目录/.td-maps/local-description.json\n" +
             "• 例如：springframework.core 会匹配所有以 *.springframework.core 结尾的包",
             "• Will match the corresponding directories\n" +
-            "• Mapping save location: project root/mappings/local-description.json\n" +
+            "• Mapping save location: project root/.td-maps/local-description.json\n" +
             "• Example: springframework.core will match all packages ending with *.springframework.core"));
         helpText.setEditable(false);
         helpText.setLineWrap(true);

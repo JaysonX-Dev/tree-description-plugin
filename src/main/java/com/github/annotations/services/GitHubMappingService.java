@@ -264,7 +264,7 @@ public class GitHubMappingService {
             connection.setRequestProperty("Accept", "application/json");
             
             // 优化的超时时间
-            connection.setConnectTimeout(8000);  // 8秒连接超时（API 响应相对较慢）
+            connection.setConnectTimeout(5000);  // 5秒连接超时
             connection.setReadTimeout(15000);     // 15秒读取超时
             
             // 禁用缓存以获取最新内容
@@ -342,7 +342,7 @@ public class GitHubMappingService {
             connection.setRequestProperty("Accept", "*/*");
             
             // 调整超时时间以适应网络延迟
-            connection.setConnectTimeout(8000);   // 8秒连接超时
+            connection.setConnectTimeout(5000);   // 5秒连接超时
             connection.setReadTimeout(15000);     // 15秒读取超时
             
             // 禁用缓存以获取最新内容

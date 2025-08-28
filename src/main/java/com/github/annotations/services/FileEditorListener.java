@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class FileEditorListener {
     
-    private static final String MAPPINGS_DIR_NAME = "mappings";
+    private static final String MAPPINGS_DIR_NAME = ".td-maps";
     
     private final Project project;
     private final RealTimeAnnotationService realTimeAnnotationService;
@@ -52,7 +52,7 @@ public class FileEditorListener {
     }
     
     /**
-     * 检查是否是mappings目录下的JSON文件
+     * 检查是否是.td-maps目录下的JSON文件
      */
     private boolean isOurJsonFile(VirtualFile file) {
         if (file == null || !file.exists() || !file.getName().endsWith(".json")) {

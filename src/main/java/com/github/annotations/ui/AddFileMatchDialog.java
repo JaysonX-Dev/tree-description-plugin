@@ -111,10 +111,10 @@ public class AddFileMatchDialog extends DialogWrapper {
         JTextArea helpText = new JTextArea();
         helpText.setText(I18nUtils.getText(project, 
             "• 会匹配映射所对应的文件上\n" +
-            "• 映射保存位置：项目根目录/mappings/local-description.json\n" +
+            "• 映射保存位置：项目根目录/.td-maps/local-description.json\n" +
             "• pom.xml 会匹配所有以 pom.xml 命名的文件",
             "• Will match the corresponding files\n" +
-            "• Mapping save location: project root/mappings/local-description.json\n" +
+            "• Mapping save location: project root/.td-maps/local-description.json\n" +
             "• pom.xml will match all files named pom.xml"));
         helpText.setEditable(false);
         helpText.setLineWrap(true);

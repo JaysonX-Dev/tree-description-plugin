@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class RealTimeAnnotationService {
     private static final Logger LOG = Logger.getInstance(RealTimeAnnotationService.class);
-    private static final String MAPPINGS_DIR_NAME = "mappings";
+    private static final String MAPPINGS_DIR_NAME = ".td-maps";
     
     private final Project project;
     private final ProjectViewRefreshService treeRefreshService;
@@ -118,7 +118,7 @@ public class RealTimeAnnotationService {
     }
     
     /**
-     * 检查是否是mappings目录下的JSON文件
+     * 检查是否是.td-maps目录下的JSON文件
      */
     private boolean isOurJsonFile(VirtualFile file) {
         if (file == null || !file.getName().endsWith(".json")) {

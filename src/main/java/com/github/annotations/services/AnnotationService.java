@@ -34,14 +34,14 @@ import java.util.stream.Stream;
 /**
  * 项目级别的备注管理服务
  * 负责存储和管理当前项目的所有中文备注
- * 基于项目根目录的 mappings/ 目录下的 JSON 文件
+ * 基于项目根目录的 .td-maps/ 目录下的 JSON 文件
  * 支持多个映射文件，主文件为 local-description.json
  */
 public class AnnotationService {
     
     private static final Logger LOG = Logger.getInstance(AnnotationService.class);
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    private static final String MAPPINGS_DIR_NAME = "mappings";
+    private static final String MAPPINGS_DIR_NAME = ".td-maps";
     private static final String LOCAL_DESCRIPTION_FILE = "local-description.json";
     
     private final Project project;
@@ -74,7 +74,7 @@ public class AnnotationService {
     public AnnotationService(Project project) {
         this.project = project;
         setupFileWatcher();
-        // 启动时从 mappings 目录加载所有映射文件
+        // 启动时从 .td-maps 目录加载所有映射文件
         loadFromMappingsDirectory();
         // 延迟初始化JSON文件监听器，避免循环依赖
         // setupJsonFileWatcher(); // 移除立即初始化
@@ -251,14 +251,14 @@ public class AnnotationService {
     }
     
     /**
-     * 保存到项目根目录的 mappings/local-description.json 文件
+     * 保存到项目根目录的 .td-maps/local-description.json 文件
      */
     private void saveToFile() {
         try {
             String basePath = project.getBasePath();
             if (basePath != null) {
-                // 创建 mappings 目录
-                Path mappingsDir = Paths.get(basePath, MAPPINGS_DIR_NAME);
+                // 创建 .td-maps 目录
+        Path mappingsDir = Paths.get(basePath, MAPPINGS_DIR_NAME);
                 Files.createDirectories(mappingsDir);
                 
                 // 主映射文件路径
@@ -642,7 +642,7 @@ public class AnnotationService {
         packagesTextColor.clear();
         filesTextColor.clear();
         
-        // 清空mappings目录下除local-description.json外的其他文件
+        // 清空.td-maps目录下除local-description.json外的其他文件
         clearMappingsDirectory();
         
         saveToFile(); // 立即保存到文件
@@ -762,7 +762,7 @@ public class AnnotationService {
     }
     
     /**
-     * 从 mappings 目录加载所有映射文件
+     * 从 .td-maps 目录加载所有映射文件
      */
     private void loadFromMappingsDirectory() {
         try {
@@ -770,20 +770,20 @@ public class AnnotationService {
             if (basePath != null) {
                 Path mappingsDir = Paths.get(basePath, MAPPINGS_DIR_NAME);
                 
-                // 如果 mappings 目录不存在，则创建它
+                // 如果 .td-maps 目录不存在，则创建它
                 if (!Files.exists(mappingsDir)) {
                     Files.createDirectories(mappingsDir);
-                    LOG.info("已创建 mappings 目录: " + mappingsDir);
+                    LOG.info("已创建 .td-maps 目录: " + mappingsDir);
                     return;
                 }
                 
-                // 扫描 mappings 目录下的所有 JSON 文件
+                // 扫描 .td-maps 目录下的所有 JSON 文件
                 scanAndLoadMappingFiles(mappingsDir);
                 
                 // 合并所有数据
                 mergeMappingData();
                 
-                LOG.info("已从 mappings 目录加载映射数据");
+                LOG.info("已从 .td-maps 目录加载映射数据");
                 
                 // 加载完成后初始化JSON文件监听器
                 ensureJsonFileWatcher();
@@ -800,7 +800,7 @@ public class AnnotationService {
     }
     
     /**
-     * 扫描并加载 mappings 目录下的所有 JSON 文件
+     * 扫描并加载 .td-maps 目录下的所有 JSON 文件
      */
     private void scanAndLoadMappingFiles(Path mappingsDir) throws IOException {
         allMappingFiles.clear();
@@ -1113,7 +1113,7 @@ public class AnnotationService {
     }
     
     /**
-     * 设置文件监听器，监听 mappings 目录下 JSON 文件的变化
+     * 设置文件监听器，监听 .td-maps 目录下 JSON 文件的变化
      * 实现实时双向绑定：修改JSON文件后自动刷新项目视图
      */
     private void setupFileWatcher() {
@@ -1125,7 +1125,7 @@ public class AnnotationService {
                     if (event instanceof VFileContentChangeEvent) {
                         VirtualFile file = event.getFile();
                         if (file != null && file.getName().toLowerCase().endsWith(".json")) {
-                            // 检查是否在 mappings 目录下
+                            // 检查是否在 .td-maps 目录下
                             String basePath = project.getBasePath();
                             if (basePath != null) {
                                 String mappingsDirPath = basePath + "/" + MAPPINGS_DIR_NAME + "/";
@@ -1133,11 +1133,11 @@ public class AnnotationService {
                                     // 延迟执行，避免频繁刷新
                                     com.intellij.openapi.application.ApplicationManager.getApplication().invokeLater(() -> {
                                         try {
-                                            // 重新加载 mappings 目录
+                                            // 重新加载 .td-maps 目录
                                             reloadFromMappingsDirectory();
                                             // 刷新项目视图
                                             ProjectView.getInstance(project).refresh();
-                                            LOG.info("检测到 mappings 目录文件变化，已自动刷新备注: " + file.getName());
+                                            LOG.info("检测到 .td-maps 目录文件变化，已自动刷新备注: " + file.getName());
                                         } catch (Exception e) {
                                             LOG.error("刷新备注失败: " + e.getMessage(), e);
                                         }
@@ -1165,7 +1165,7 @@ public class AnnotationService {
                                         try {
                                             reloadFromMappingsDirectory();
                                             ProjectView.getInstance(project).refresh();
-                                            LOG.info("预刷新：检测到 mappings 目录文件即将变化");
+                                            LOG.info("预刷新：检测到 .td-maps 目录文件即将变化");
                                         } catch (Exception e) {
                                             // 忽略预刷新的错误
                                         }
@@ -1180,7 +1180,7 @@ public class AnnotationService {
     }
     
     /**
-     * 重新从 mappings 目录加载所有映射文件
+     * 重新从 .td-maps 目录加载所有映射文件
      */
     private void reloadFromMappingsDirectory() {
         try {
@@ -1194,7 +1194,7 @@ public class AnnotationService {
                     // 合并数据
                     mergeMappingData();
                     
-                    LOG.info("已从 mappings 目录重新加载映射数据");
+                    LOG.info("已从 .td-maps 目录重新加载映射数据");
                 }
             }
         } catch (IOException e) {
@@ -1213,7 +1213,7 @@ public class AnnotationService {
     }
     
     /**
-     * 清空mappings目录下除local-description.json外的其他文件
+     * 清空.td-maps目录下除local-description.json外的其他文件
      */
     private void clearMappingsDirectory() {
         try {
@@ -1235,7 +1235,7 @@ public class AnnotationService {
                 }
             }
         } catch (IOException e) {
-            LOG.error("清空mappings目录失败: " + e.getMessage(), e);
+            LOG.error("清空.td-maps目录失败: " + e.getMessage(), e);
         }
     }
     
@@ -1251,7 +1251,7 @@ public class AnnotationService {
                     VFSRefreshService vfsService = new VFSRefreshService(project);
                     String basePath = project.getBasePath();
                     if (basePath != null) {
-                        String jsonPath = basePath + "/mappings/local-description.json";
+                        String jsonPath = basePath + "/.td-maps/local-description.json";
                         vfsService.refreshJsonFile(jsonPath);
                         vfsService.refreshMappingsDirectory();
                     }
@@ -1337,7 +1337,7 @@ public class AnnotationService {
                     VFSRefreshService vfsService = new VFSRefreshService(project);
                     String basePath = project.getBasePath();
                     if (basePath != null) {
-                        String jsonPath = basePath + "/mappings/local-description.json";
+                        String jsonPath = basePath + "/.td-maps/local-description.json";
                         vfsService.refreshJsonFile(jsonPath);
                         vfsService.refreshMappingsDirectory();
                     }
@@ -1373,7 +1373,7 @@ public class AnnotationService {
                     VFSRefreshService vfsService = new VFSRefreshService(project);
                     String basePath = project.getBasePath();
                     if (basePath != null) {
-                        String jsonPath = basePath + "/mappings/local-description.json";
+                        String jsonPath = basePath + "/.td-maps/local-description.json";
                         vfsService.refreshJsonFile(jsonPath);
                         vfsService.refreshMappingsDirectory();
                     }

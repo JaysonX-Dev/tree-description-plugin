@@ -106,9 +106,9 @@ public final class MappingLibraryService {
         }
         
         try {
-            loadBuiltinLibrary("spring-boot", "/mappings/spring-boot-common.json");
-            loadBuiltinLibrary("apache", "/mappings/apache-commons.json");
-            loadBuiltinLibrary("mybatis", "/mappings/mybatis-common.json");
+            loadBuiltinLibrary("spring-boot", "/.td-maps/spring-boot-common.json");
+            loadBuiltinLibrary("apache", "/.td-maps/apache-commons.json");
+            loadBuiltinLibrary("mybatis", "/.td-maps/mybatis-common.json");
             initialized = true;
         } catch (Exception e) {
             LOG.error("初始化预置映射库失败", e);
@@ -133,9 +133,9 @@ public final class MappingLibraryService {
         }
         
         try {
-            loadBuiltinLibrary("spring-boot", "/mappings/spring-boot-common.json");
-            loadBuiltinLibrary("apache", "/mappings/apache-commons.json");
-            loadBuiltinLibrary("mybatis", "/mappings/mybatis-common.json");
+            loadBuiltinLibrary("spring-boot", "/.td-maps/spring-boot-common.json");
+            loadBuiltinLibrary("apache", "/.td-maps/apache-commons.json");
+            loadBuiltinLibrary("mybatis", "/.td-maps/mybatis-common.json");
         } catch (Exception e) {
             LOG.error("重新加载内置映射库失败", e);
         }
