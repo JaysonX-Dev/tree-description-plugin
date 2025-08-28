@@ -15,7 +15,14 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.TextEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileManager;
+import com.intellij.openapi.vfs.newvfs.BulkFileListener;
+import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
+import com.intellij.openapi.vfs.newvfs.events.VFileContentChangeEvent;
+import com.intellij.util.messages.MessageBusConnection;
 import org.jetbrains.annotations.NotNull;
+import java.io.IOException;
+import java.util.List;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,6 +56,9 @@ public class RealTimeAnnotationService {
     // Document监听器映射
     private final Map<VirtualFile, DocumentListener> documentListeners = new HashMap<>();
     
+    // VFS监听器相关
+    private MessageBusConnection messageBusConnection;
+    
     public RealTimeAnnotationService(Project project) {
         this.project = project;
         this.treeRefreshService = new ProjectViewRefreshService(project);
@@ -56,7 +66,64 @@ public class RealTimeAnnotationService {
         // 检查当前已打开的JSON文件
         checkAndRegisterOpenFiles();
         
+        // 设置VFS文件监听器，监听外部文件变化
+        setupVfsFileWatcher();
+        
         LOG.info("RealTimeAnnotationService初始化成功");
+    }
+    
+    /**
+     * 设置VFS文件监听器，监听 .td-maps 目录下 JSON 文件的外部变化
+     */
+    private void setupVfsFileWatcher() {
+        messageBusConnection = project.getMessageBus().connect();
+        messageBusConnection.subscribe(VirtualFileManager.VFS_CHANGES, new BulkFileListener() {
+            @Override
+            public void after(@NotNull List<? extends VFileEvent> events) {
+                for (VFileEvent event : events) {
+                    VirtualFile eventFile = event.getFile();
+                    String fileName = eventFile != null ? eventFile.getName() : "null";
+                    LOG.info("检测到VFS事件: " + event.getClass().getSimpleName() + " - " + fileName);
+                    if (event instanceof VFileContentChangeEvent) {
+                        VirtualFile file = event.getFile();
+                        if (file != null && file.getName().toLowerCase().endsWith(".json")) {
+                            // 检查是否在 .td-maps 目录下
+                            String basePath = project.getBasePath();
+                            if (basePath != null) {
+                                String mappingsDirPath = basePath + "/" + MAPPINGS_DIR_NAME + "/";
+                                if (file.getPath().startsWith(mappingsDirPath)) {
+                                    LOG.info("检测到.td-maps目录下的JSON文件变化: " + file.getName());
+                                    // 延迟执行，避免频繁刷新
+                                    ApplicationManager.getApplication().invokeLater(() -> {
+                                        try {
+                                            // 重新加载极文件内容到内存缓存
+                                            reloadFromFile(file);
+                                            // 刷新项目视图
+                                            treeRefreshService.refreshProjectView();
+                                            LOG.info("检测到外部文件变化，已自动刷新备注: " + file.getName());
+                                        } catch (Exception e) {
+                                            LOG.error("刷新备注失败: " + e.getMessage(), e);
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    /**
+     * 从文件重新加载内容到内存缓存
+     */
+    private void reloadFromFile(VirtualFile file) {
+        try {
+            String content = new String(file.contentsToByteArray());
+            updateLiveCacheImmediately(content);
+        } catch (IOException e) {
+            LOG.error("重新加载文件失败: " + e.getMessage(), e);
+        }
     }
     
     /**
@@ -263,7 +330,7 @@ public class RealTimeAnnotationService {
         // 延迟保存到磁盘，避免频繁IO和冲突
         saveTask = scheduler.schedule(() -> {
             saveToFileInBackground(document);
-        }, 200, TimeUnit.MILLISECONDS);
+        }, 50, TimeUnit.MILLISECONDS); // 从200ms改为50ms，实现更实时响应
     }
     
     /**
@@ -325,6 +392,11 @@ public class RealTimeAnnotationService {
      * 释放资源
      */
     public void dispose() {
+        // 移除VFS监听器
+        if (messageBusConnection != null) {
+            messageBusConnection.disconnect();
+        }
+        
         // 移除所有文档监听器
         for (Map.Entry<VirtualFile, DocumentListener> entry : documentListeners.entrySet()) {
             VirtualFile file = entry.getKey();

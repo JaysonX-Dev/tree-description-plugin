@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -113,31 +114,33 @@ public class LocalMappingFile {
      * 映射内容结构，与内置映射库完全一致
      */
     public static class Mappings {
-        @SerializedName("packages")
-        private Map<String, String> packages;
-        
         @SerializedName("files")
         private Map<String, String> files;
         
-        @SerializedName("packageMatch")
-        private Map<String, String> packageMatch;
+        @SerializedName("packages")
+        private Map<String, String> packages;
         
         @SerializedName("fileMatch")
         private Map<String, String> fileMatch;
         
-        @SerializedName("packagesTextColor")
-        private Map<String, String> packagesTextColor;
+        @SerializedName("packageMatch")
+        private Map<String, String> packageMatch;
         
         @SerializedName("filesTextColor")
         private Map<String, String> filesTextColor;
         
+        @SerializedName("packagesTextColor")
+        private Map<String, String> packagesTextColor;
+        
+
+        
         public Mappings() {
-            this.packages = new HashMap<>();
-            this.files = new HashMap<>();
-            this.packageMatch = new HashMap<>();
-            this.fileMatch = new HashMap<>();
-            this.packagesTextColor = new HashMap<>();
-            this.filesTextColor = new HashMap<>();
+            this.files = new LinkedHashMap<>();
+            this.packages = new LinkedHashMap<>();
+            this.fileMatch = new LinkedHashMap<>();
+            this.packageMatch = new LinkedHashMap<>();
+            this.filesTextColor = new LinkedHashMap<>();
+            this.packagesTextColor = new LinkedHashMap<>();
         }
         
         @NotNull

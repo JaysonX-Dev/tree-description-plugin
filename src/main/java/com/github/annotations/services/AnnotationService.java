@@ -3,6 +3,7 @@ package com.github.annotations.services;
 import com.github.annotations.model.LocalMappingFile;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.FieldNamingPolicy;
 import com.google.gson.JsonSyntaxException;
 import com.intellij.openapi.diagnostic.Logger;
 
@@ -27,6 +28,7 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.stream.Stream;
@@ -40,19 +42,22 @@ import java.util.stream.Stream;
 public class AnnotationService {
     
     private static final Logger LOG = Logger.getInstance(AnnotationService.class);
-    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private static final Gson gson = new GsonBuilder()
+        .setPrettyPrinting()
+        .setFieldNamingPolicy(FieldNamingPolicy.IDENTITY)
+        .create();
     private static final String MAPPINGS_DIR_NAME = ".td-maps";
     private static final String LOCAL_DESCRIPTION_FILE = "local-description.json";
     
     private final Project project;
-    private Map<String, String> annotations = new HashMap<>(); // 文件备注
-    private Map<String, String> packageAnnotations = new HashMap<>(); // 包备注
-    private Map<String, String> fileMatchAnnotations = new HashMap<>(); // 文件匹配模式备注
-    private Map<String, String> packageMatchAnnotations = new HashMap<>(); // 包匹配模式备注
+    private Map<String, String> annotations = new LinkedHashMap<>(); // 文件备注
+    private Map<String, String> packageAnnotations = new LinkedHashMap<>(); // 包备注
+    private Map<String, String> fileMatchAnnotations = new LinkedHashMap<>(); // 文件匹配模式备注
+    private Map<String, String> packageMatchAnnotations = new LinkedHashMap<>(); // 包匹配模式备注
     
     // 新增：备注字体颜色配置
-    private Map<String, String> packagesTextColor = new HashMap<>(); // 包备注字体颜色
-    private Map<String, String> filesTextColor = new HashMap<>(); // 文件备注字体颜色
+    private Map<String, String> packagesTextColor = new LinkedHashMap<>(); // 包备注字体颜色
+    private Map<String, String> filesTextColor = new LinkedHashMap<>(); // 文件备注字体颜色
     
     private boolean builtinMappingsEnabled = true; // 内置映射库开关状态
     private boolean projectTreeAnnotationsEnabled = true; // 项目树备注显示开关状态
@@ -79,6 +84,9 @@ public class AnnotationService {
         // 延迟初始化JSON文件监听器，避免循环依赖
         // setupJsonFileWatcher(); // 移除立即初始化
         
+        // 初始化实时备注服务，启用双向监听
+        setupRealTimeAnnotationService();
+        
         // 注册项目启动监听器（新API方式）
         registerProjectListener();
     }
@@ -87,9 +95,6 @@ public class AnnotationService {
      * 清理资源
      */
     public void dispose() {
-        if (messageBusConnection != null) {
-            messageBusConnection.disconnect();
-        }
         if (jsonFileWatcher != null) {
             jsonFileWatcher.dispose();
         }
@@ -301,14 +306,14 @@ public class AnnotationService {
         localMapping.setBuiltinMappingsEnabled(builtinMappingsEnabled);
         localMapping.setLanguage(language);
         
-        // 设置映射内容 - 按照指定顺序
+        // 设置映射内容 - 按照期望的顺序
         LocalMappingFile.Mappings mappings = localMapping.getMappings();
-        mappings.setFiles(new HashMap<>(annotations));
-        mappings.setFilesTextColor(new HashMap<>(filesTextColor));
-        mappings.setPackages(new HashMap<>(packageAnnotations));
-        mappings.setPackagesTextColor(new HashMap<>(packagesTextColor));
-        mappings.setFileMatch(new HashMap<>(fileMatchAnnotations));
-        mappings.setPackageMatch(new HashMap<>(packageMatchAnnotations));
+        mappings.setFiles(new LinkedHashMap<>(annotations));
+        mappings.setPackages(new LinkedHashMap<>(packageAnnotations));
+        mappings.setFileMatch(new LinkedHashMap<>(fileMatchAnnotations));
+        mappings.setPackageMatch(new LinkedHashMap<>(packageMatchAnnotations));
+        mappings.setFilesTextColor(new LinkedHashMap<>(filesTextColor));
+        mappings.setPackagesTextColor(new LinkedHashMap<>(packagesTextColor));
         
         return localMapping;
     }
@@ -1117,66 +1122,9 @@ public class AnnotationService {
      * 实现实时双向绑定：修改JSON文件后自动刷新项目视图
      */
     private void setupFileWatcher() {
-        messageBusConnection = project.getMessageBus().connect();
-        messageBusConnection.subscribe(VirtualFileManager.VFS_CHANGES, new BulkFileListener() {
-            @Override
-            public void after(@NotNull List<? extends VFileEvent> events) {
-                for (VFileEvent event : events) {
-                    if (event instanceof VFileContentChangeEvent) {
-                        VirtualFile file = event.getFile();
-                        if (file != null && file.getName().toLowerCase().endsWith(".json")) {
-                            // 检查是否在 .td-maps 目录下
-                            String basePath = project.getBasePath();
-                            if (basePath != null) {
-                                String mappingsDirPath = basePath + "/" + MAPPINGS_DIR_NAME + "/";
-                                if (file.getPath().startsWith(mappingsDirPath)) {
-                                    // 延迟执行，避免频繁刷新
-                                    com.intellij.openapi.application.ApplicationManager.getApplication().invokeLater(() -> {
-                                        try {
-                                            // 重新加载 .td-maps 目录
-                                            reloadFromMappingsDirectory();
-                                            // 刷新项目视图
-                                            ProjectView.getInstance(project).refresh();
-                                            LOG.info("检测到 .td-maps 目录文件变化，已自动刷新备注: " + file.getName());
-                                        } catch (Exception e) {
-                                            LOG.error("刷新备注失败: " + e.getMessage(), e);
-                                        }
-                                    });
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            
-            @Override
-            public void before(@NotNull List<? extends VFileEvent> events) {
-                // 在文件变化前也进行监听，提高响应速度
-                for (VFileEvent event : events) {
-                    if (event instanceof VFileContentChangeEvent) {
-                        VirtualFile file = event.getFile();
-                        if (file != null && file.getName().toLowerCase().endsWith(".json")) {
-                            String basePath = project.getBasePath();
-                            if (basePath != null) {
-                                String mappingsDirPath = basePath + "/" + MAPPINGS_DIR_NAME + "/";
-                                if (file.getPath().startsWith(mappingsDirPath)) {
-                                    // 预加载文件内容，提高响应速度
-                                    com.intellij.openapi.application.ApplicationManager.getApplication().invokeLater(() -> {
-                                        try {
-                                            reloadFromMappingsDirectory();
-                                            ProjectView.getInstance(project).refresh();
-                                            LOG.info("预刷新：检测到 .td-maps 目录文件即将变化");
-                                        } catch (Exception e) {
-                                            // 忽略预刷新的错误
-                                        }
-                                    });
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        });
+        // 不再需要重复的VFS监听器，RealTimeAnnotationService中已有实时监听器
+        // 保留方法体为空，避免双重监听问题
+        LOG.info("VFS文件监听器已禁用，使用RealTimeAnnotationService的实时监听器");
     }
     
     /**

@@ -45,8 +45,8 @@ public class JsonEditorListener {
         this.documentListeners = new HashMap<>();
         this.gson = new Gson();
         
-        // 防抖定时器，200ms后执行更新
-        this.debounceTimer = new Timer(200, e -> {
+        // 防抖定时器，50ms后执行更新（从200ms调整为50ms实现更实时响应）
+        this.debounceTimer = new Timer(50, e -> {
             performUpdate();
         });
         this.debounceTimer.setRepeats(false);

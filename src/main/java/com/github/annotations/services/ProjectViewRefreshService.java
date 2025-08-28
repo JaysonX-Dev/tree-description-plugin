@@ -24,14 +24,15 @@ public class ProjectViewRefreshService {
         try {
             ProjectView projectView = ProjectView.getInstance(project);
             if (projectView != null) {
-                // 标记需要刷新
-                projectView.refresh();
-                
-                // 强制立即刷新
+                // 使用正确的API强制刷新整个项目视图
                 ApplicationManager.getApplication().invokeLater(() -> {
                     try {
-                        // 使用正确的API刷新项目视图
                         projectView.refresh();
+                        // 避免使用 getCurrentProjectViewPane() 因为它在某些IDE版本中可能不可用
+                        projectView.refresh(); // 再次刷新确保更新
+                        
+                        com.intellij.openapi.diagnostic.Logger.getInstance(ProjectViewRefreshService.class)
+                            .info("项目视图已强制刷新");
                     } catch (Exception e) {
                         com.intellij.openapi.diagnostic.Logger.getInstance(ProjectViewRefreshService.class)
                             .warn("强制刷新项目树失败: " + e.getMessage());
