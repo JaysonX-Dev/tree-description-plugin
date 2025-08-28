@@ -15,25 +15,12 @@ Add intelligent path annotations to IntelliJ IDEA project tree, helping develope
 - **Mac**: `Option + Shift + E`
 - **Internationalization**: Support Chinese and English interface switching
 - **Color Marking**: Support custom annotation colors
-- **Global Search**: Support global annotation search
-  - **Windows**: `Alt + Shift + F`
-  - **Mac**: `Option + Shift + F`
 
 ### 🚀 Use Cases
 - **Learning Large Open Source Projects**: Quickly understand project structure and module responsibilities
 - **Team Collaboration**: Unify project naming conventions and code understanding
 - **Programming Education**: Provide clear project structure explanations for students
 - **Code Review**: Quickly identify file functions and package purposes
-
-### 🚀 Quick Start
-1. **Add Annotation**: Right-click file/directory in project tree → "Add Annotation"
-2. **Search Annotations**: Use shortcut `Alt+Shift+F` or menu `Tools > Annotation Tools > Search Project Tree Annotations`
-3. **Manage Mappings**: `Tools > Annotation Tools > View Mapping Library`
-
-### ⚙️ Configuration
-- **Language Switch**: `Tools > Annotation Tools > Language > English/中文`
-- **Enable/Disable**: `Tools > Annotation Tools > Enable Project Tree Annotations`
-- **Mapping Library Management**: Support downloading open source mapping libraries from GitHub
 
 ### 🤝 Contributing
 Welcome to submit Issues and Pull Requests!
@@ -59,25 +46,12 @@ If this plugin helps you, welcome to give us a ⭐ Star!
 - **Mac**: `Option + Shift + E`
 - **国际化**: 支持中英文界面切换
 - **颜色标记**: 支持自定义备注颜色
-- **全局搜索**: 支持全局搜索备注
-  - **Windows**: `Alt + Shift + F`
-  - **Mac**: `Option + Shift + F`
 
 ### 🚀 使用场景
 - **学习大型开源项目**: 快速理解项目结构和模块职责
 - **团队协作**: 统一项目命名规范和代码理解
 - **编程教学**: 为学员提供清晰的项目结构说明
 - **代码审查**: 快速识别文件功能和包的作用
-
-###  🚀快速开始
-1. **添加备注**: 右键点击项目树中的文件/目录 → "添加备注"
-2. **搜索备注**: 使用快捷键 `Alt+Shift+F` 或菜单 `Tools > 备注工具 > 搜索项目树备注`
-3. **管理映射**: `Tools > 备注工具 > 查看映射库`
-
-### ⚙️ 配置说明
-- **语言切换**: `Tools > 备注工具 > 语言 > English/中文`
-- **启用/禁用**: `Tools > 备注工具 > 启用项目树备注`
-- **映射库管理**: 支持从GitHub下载开源映射库
 
 ### 🤝 贡献指南
 欢迎提交 Issue 和 Pull Request！
