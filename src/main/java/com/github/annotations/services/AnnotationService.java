@@ -368,6 +368,17 @@ public class AnnotationService {
      */
     @Nullable
     public String getFileMatchAnnotation(@NotNull String fileName) {
+        return getFileMatchAnnotation(fileName, null);
+    }
+    
+    /**
+     * 根据文件名和路径模式匹配文件匹配模式备注（支持混合匹配）
+     * @param fileName 文件名
+     * @param relativePath 文件的相对路径（可为null）
+     * @return 匹配的备注
+     */
+    @Nullable
+    public String getFileMatchAnnotation(@NotNull String fileName, @Nullable String relativePath) {
         if (fileMatchAnnotations.isEmpty()) {
             return null;
         }
@@ -390,7 +401,7 @@ public class AnnotationService {
                 }
                 
                 // 使用精确匹配逻辑
-                return matchesFilePattern(fileName, pattern);
+                return matchesFilePattern(fileName, pattern, relativePath);
             })
             .map(Map.Entry::getValue)
             .findFirst()
@@ -1034,19 +1045,74 @@ public class AnnotationService {
      * @return 是否匹配
      */
     private boolean matchesFilePattern(@NotNull String fileName, @NotNull String pattern) {
+        return matchesFilePattern(fileName, pattern, null);
+    }
+    
+    /**
+     * 检查文件名是否匹配给定的模式（支持混合匹配）
+     * @param fileName 文件名
+     * @param pattern 匹配模式
+     * @param relativePath 文件的相对路径（可为null）
+     * @return 是否匹配
+     */
+    private boolean matchesFilePattern(@NotNull String fileName, @NotNull String pattern, @Nullable String relativePath) {
         try {
             // 1. 尝试正则表达式匹配
             if (pattern.contains(".*") || pattern.contains("\\") || pattern.contains("$") || pattern.contains("^")) {
                 return fileName.matches(pattern);
             }
             
-            // 2. 完全匹配 - 文件名必须完全相等
+            // 2. 检查是否为混合匹配模式（包含路径分隔符）
+            if (pattern.contains("/")) {
+                return matchesMixedPattern(fileName, pattern, relativePath);
+            }
+            
+            // 3. 完全匹配 - 文件名必须完全相等
             return fileName.equalsIgnoreCase(pattern);
             
         } catch (Exception e) {
             // 如果出错，降级为简单包含匹配
             return fileName.toLowerCase().contains(pattern.toLowerCase());
         }
+    }
+    
+    /**
+     * 检查文件是否匹配混合模式（包路径+文件名）
+     * @param fileName 当前文件名
+     * @param pattern 混合模式，如 "com/common/pom.xml"
+     * @param relativePath 文件的相对路径（可为null）
+     * @return 是否匹配
+     */
+    private boolean matchesMixedPattern(@NotNull String fileName, @NotNull String pattern, @Nullable String relativePath) {
+        // 从pattern中提取文件名和包路径
+        int lastSlashIndex = pattern.lastIndexOf('/');
+        if (lastSlashIndex == -1) {
+            return false; // 不应该发生，因为调用前已检查包含'/'
+        }
+        
+        String expectedFileName = pattern.substring(lastSlashIndex + 1);
+        String expectedPackagePath = pattern.substring(0, lastSlashIndex);
+        
+        // 首先检查文件名是否匹配
+        if (!fileName.equalsIgnoreCase(expectedFileName)) {
+            return false;
+        }
+        
+        // 如果没有相对路径信息，只能基于文件名匹配
+        if (relativePath == null || relativePath.isEmpty()) {
+            return true;
+        }
+        
+        // 检查文件是否在期望的包路径中（后缀匹配）
+        // 从relativePath中提取目录路径
+        String fileDir = "";
+        int fileLastSlashIndex = relativePath.lastIndexOf('/');
+        if (fileLastSlashIndex != -1) {
+            fileDir = relativePath.substring(0, fileLastSlashIndex);
+        }
+        
+        // 检查目录路径是否以期望的包路径结尾
+        return fileDir.endsWith(expectedPackagePath);
     }
     
     /**

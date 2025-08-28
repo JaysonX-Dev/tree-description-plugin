@@ -112,10 +112,12 @@ public class AddFileMatchDialog extends DialogWrapper {
         helpText.setText(I18nUtils.getText(project, 
             "• 会匹配映射所对应的文件上\n" +
             "• 映射保存位置：项目根目录/.td-maps/local-description.json\n" +
-            "• pom.xml 会匹配所有以 pom.xml 命名的文件",
+            "• pom.xml 会匹配所有以 pom.xml 命名的文件\n" +
+            "• com/common/pom.xml 会匹配 com.common 包下的 pom.xml 文件",
             "• Will match the corresponding files\n" +
             "• Mapping save location: project root/.td-maps/local-description.json\n" +
-            "• pom.xml will match all files named pom.xml"));
+            "• pom.xml will match all files named pom.xml\n" +
+            "• com/common/pom.xml will match pom.xml files in com.common package"));
         helpText.setEditable(false);
         helpText.setLineWrap(true);
         helpText.setWrapStyleWord(true);
@@ -141,10 +143,14 @@ public class AddFileMatchDialog extends DialogWrapper {
             return;
         }
         
-        // 如果模式以*.开头，去掉*.前缀进行保存
+        // 处理通配符前缀，支持多种格式
         String savePattern = pattern;
-        if (pattern.startsWith("*.")) {
+        if (pattern.startsWith("*/")) {
             savePattern = pattern.substring(2);
+        } else if (pattern.startsWith("*.")) {
+            savePattern = pattern.substring(2);
+        } else if (pattern.startsWith("*") && !pattern.startsWith("*.") && !pattern.startsWith("*/")) {
+            savePattern = pattern.substring(1);
         }
         
         // 检查是否已存在相同的模式（使用保存时的模式进行检查）
@@ -195,9 +201,9 @@ public class AddFileMatchDialog extends DialogWrapper {
             return new ValidationInfo(I18nUtils.getText(project, "请输入备注描述", "Please enter annotation description"), descriptionField);
         }
         
-        // 检查模式是否包含特殊字符
-        if (pattern.contains("/") || pattern.contains("\\") || pattern.contains(":")) {
-            return new ValidationInfo(I18nUtils.getText(project, "匹配模式不能包含路径分隔符或特殊字符", "Match pattern cannot contain path separators or special characters"), patternField);
+        // 检查模式是否包含不允许的特殊字符（现在允许路径分隔符）
+        if (pattern.contains("\\") || pattern.contains(":")) {
+            return new ValidationInfo(I18nUtils.getText(project, "匹配模式不能包含反斜杠或冒号", "Match pattern cannot contain backslashes or colons"), patternField);
         }
         
         return null;

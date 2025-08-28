@@ -130,7 +130,9 @@ public class AnnotationDecorator implements ProjectViewNodeDecorator {
         
         // 3. 用户文件匹配映射（仅对文件生效）
         if (!file.isDirectory()) {
-            String userFileMatchAnnotation = getUserFilePatternAnnotation(annotationService, name);
+            // 获取完整的相对路径用于混合匹配
+            String relativePath = getRelativePathForMatching(project, file);
+            String userFileMatchAnnotation = getUserFilePatternAnnotation(annotationService, name, relativePath);
             if (userFileMatchAnnotation != null && !userFileMatchAnnotation.isEmpty()) {
                 return userFileMatchAnnotation.trim();
             }
@@ -187,8 +189,8 @@ public class AnnotationDecorator implements ProjectViewNodeDecorator {
      * 获取用户自定义的文件匹配模式备注
      */
     @Nullable
-    private String getUserFilePatternAnnotation(@NotNull AnnotationService annotationService, @NotNull String fileName) {
-        return annotationService.getFileMatchAnnotation(fileName);
+    private String getUserFilePatternAnnotation(@NotNull AnnotationService annotationService, @NotNull String fileName, @Nullable String relativePath) {
+        return annotationService.getFileMatchAnnotation(fileName, relativePath);
     }
     
     /**
@@ -235,7 +237,8 @@ public class AnnotationDecorator implements ProjectViewNodeDecorator {
         
         // 3. 检查用户文件匹配映射颜色
         if (!file.isDirectory()) {
-            String userFileMatchAnnotation = getUserFilePatternAnnotation(annotationService, name);
+            String relativePath = getRelativePathForMatching(project, file);
+            String userFileMatchAnnotation = getUserFilePatternAnnotation(annotationService, name, relativePath);
             if (userFileMatchAnnotation != null && userFileMatchAnnotation.trim().equals(annotation.trim())) {
                 String fileColor = annotationService.getFileTextColor(name);
                 if (fileColor != null) {
