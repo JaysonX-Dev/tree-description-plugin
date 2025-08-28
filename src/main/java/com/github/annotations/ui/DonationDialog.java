@@ -152,7 +152,7 @@ public class DonationDialog extends DialogWrapper {
     private void openDonationPage() {
         try {
             // 这里可以替换为您的实际捐赠链接
-            String donationUrl = "https://jaysonx-tech.github.io/TreeRemarkPage/TreeRemark.html";
+            String donationUrl = "https://jaysonx-tech.github.io/TreeDescriptionPage/TreeDescription.html";
             
             if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
                 Desktop.getDesktop().browse(URI.create(donationUrl));
@@ -168,7 +168,7 @@ public class DonationDialog extends DialogWrapper {
             JOptionPane.showMessageDialog(
                 getContentPane(),
                 I18nUtils.getText(project, "无法打开捐赠页面，请手动访问：\n\n", "Unable to open donation page, please visit manually:\n\n") +
-                "https://jaysonx-tech.github.io/TreeRemarkPage/TreeRemark.html",
+                "https://jaysonx-tech.github.io/TreeDescriptionPage/TreeDescription.html",
                 I18nUtils.getText(project, "打开失败", "Open Failed"),
                 JOptionPane.ERROR_MESSAGE
             );
