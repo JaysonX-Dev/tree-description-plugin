@@ -6,6 +6,7 @@ import com.github.annotations.utils.I18nUtils;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationDisplayType;
 import com.intellij.notification.NotificationGroup;
+import com.intellij.notification.NotificationGroupManager;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -43,7 +44,7 @@ public class ExtractCommentAnnotationAction extends AnAction {
     
     // 通知组
     private static final NotificationGroup NOTIFICATION_GROUP = 
-        NotificationGroup.balloonGroup("Extract Comment Notification");
+        NotificationGroupManager.getInstance().getNotificationGroup("Extract.Comment.Notification");
     
     public ExtractCommentAnnotationAction() {
         super();
@@ -254,12 +255,10 @@ public class ExtractCommentAnnotationAction extends AnAction {
      */
     @Nullable
     private String getRelativePath(@NotNull Project project, @NotNull VirtualFile file) {
-        VirtualFile projectRoot = project.getBaseDir();
-        if (projectRoot == null) {
+        String projectPath = project.getBasePath();
+        if (projectPath == null) {
             return null;
         }
-        
-        String projectPath = projectRoot.getPath();
         String filePath = file.getPath();
         
         if (filePath.startsWith(projectPath)) {

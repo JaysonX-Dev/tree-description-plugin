@@ -21,6 +21,7 @@ import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.TextEditor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import java.lang.reflect.Method;
 
 
 public class AddAnnotationAction extends AnAction {
@@ -117,7 +118,15 @@ public class AddAnnotationAction extends AnAction {
                 }
             }
             
-            ProjectView.getInstance(project).refresh();
+            // 保存后立即刷新VFS和项目视图（修复多选文件不刷新问题）
+            try {
+                java.lang.reflect.Method refreshMethod = annotationService.getClass().getDeclaredMethod("refreshAfterSave");
+                refreshMethod.setAccessible(true);
+                refreshMethod.invoke(annotationService);
+            } catch (Exception ex) {
+                // 如果反射失败，使用备用刷新方法
+                ProjectView.getInstance(project).refresh();
+            }
         }
     }
     
@@ -322,12 +331,11 @@ public class AddAnnotationAction extends AnAction {
     
     @Nullable
     private String getRelativePath(@NotNull Project project, @NotNull VirtualFile file) {
-        VirtualFile projectRoot = project.getBaseDir();
-        if (projectRoot == null) {
+        String projectPath = project.getBasePath();
+        if (projectPath == null) {
             return null;
         }
         
-        String projectPath = projectRoot.getPath();
         String filePath = file.getPath();
         
         if (filePath.startsWith(projectPath)) {

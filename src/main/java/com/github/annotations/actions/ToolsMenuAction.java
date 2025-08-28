@@ -5,6 +5,7 @@ import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.actionSystem.Separator;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -43,25 +44,20 @@ public class ToolsMenuAction extends ActionGroup {
     @NotNull
     @Override
     public AnAction[] getChildren(@Nullable AnActionEvent e) {
-        // 创建语言子菜单
-        LanguageSubMenuAction languageGroup = new LanguageSubMenuAction();
-        
-        // 创建主菜单组
-        DefaultActionGroup mainGroup = new DefaultActionGroup();
-        mainGroup.add(languageGroup);
-        mainGroup.addSeparator();
-        mainGroup.add(new ToggleProjectTreeAnnotationsAction());
-        // 在禁用项目树备注下方添加搜索备注（引用已注册的Action）
-        AnAction searchAction = com.intellij.openapi.actionSystem.ActionManager.getInstance()
-            .getAction("ChineseAnnotations.SearchAnnotations");
-        if (searchAction != null) {
-            mainGroup.add(searchAction);
-        }
-        mainGroup.addSeparator();
-        mainGroup.add(new ViewMappingsAction());
-        mainGroup.addSeparator();
-        mainGroup.add(new BuyMeACoffeeAction());
-        
-        return mainGroup.getChildren(e);
+        // 直接返回Action数组，避免使用Override-only API
+        return new AnAction[]{
+            new LanguageSubMenuAction(),
+            Separator.getInstance(),  // 分隔符
+            new ToggleProjectTreeAnnotationsAction(),
+            /*
+            // 临时注释掉极速搜索，后期修改
+            com.intellij.openapi.actionSystem.ActionManager.getInstance()
+                .getAction("ChineseAnnotations.SearchAnnotations"),
+            */
+            Separator.getInstance(),  // 分隔符
+            new ViewMappingsAction(),
+            Separator.getInstance(),  // 分隔符
+            new BuyMeACoffeeAction()
+        };
     }
 }

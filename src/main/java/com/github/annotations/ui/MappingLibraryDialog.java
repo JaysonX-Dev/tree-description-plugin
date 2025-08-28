@@ -141,7 +141,7 @@ public class MappingLibraryDialog extends DialogWrapper {
         try {
             // 添加纯文本内容
             doc.insertString(doc.getLength(), I18nUtils.getText(project, "映射库来源于 GitHub 开源仓库：", "Mapping library comes from GitHub open source repository: "), normalStyle);
-            doc.insertString(doc.getLength(), "https://github.com/JaysonX-Dev/tree-description-repository", linkStyle);
+            doc.insertString(doc.getLength(), "https://github.com/JaysonX-Tech/tree-description-repository", linkStyle);
             doc.insertString(doc.getLength(), " \n" + I18nUtils.getText(project, "如果遇到下载问题，请前往 Github 手动下载", "If you encounter download issues, please go to Github to download manually."), normalStyle);
             doc.insertString(doc.getLength(), " \n" + I18nUtils.getText(project, "欢迎提交 PR 参与贡献 !!！", "Welcome to submit PR to contribute!!"), normalStyle);
         } catch (BadLocationException e) {
@@ -428,11 +428,11 @@ public class MappingLibraryDialog extends DialogWrapper {
      */
     private boolean saveToLocalMappings(String fileName, String jsonContent) {
         try {
-            if (project == null || project.getBaseDir() == null) {
+            if (project == null || project.getBasePath() == null) {
                 return false;
             }
             
-            java.io.File mappingsDir = new java.io.File(project.getBaseDir().getPath(), "mappings");
+            java.io.File mappingsDir = new java.io.File(project.getBasePath(), "mappings");
             if (!mappingsDir.exists()) {
                 if (!mappingsDir.mkdirs()) {
                     return false;
@@ -474,7 +474,7 @@ public class MappingLibraryDialog extends DialogWrapper {
      */
     private void openGitHubPage() {
         try {
-            java.awt.Desktop.getDesktop().browse(new java.net.URI("https://github.com/JaysonX-Dev/tree-description-repository"));
+            java.awt.Desktop.getDesktop().browse(new java.net.URI("https://github.com/JaysonX-Tech/tree-description-repository"));
         } catch (Exception e) {
             JOptionPane.showMessageDialog(getContentPane(), "无法打开GitHub链接: " + e.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
         }

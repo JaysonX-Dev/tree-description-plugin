@@ -326,12 +326,10 @@ public class AnnotationDecorator implements ProjectViewNodeDecorator {
      */
     @Nullable
     private String getRelativePathForMatching(@NotNull Project project, @NotNull VirtualFile file) {
-        VirtualFile projectRoot = project.getBaseDir();
-        if (projectRoot == null) {
+        String projectPath = project.getBasePath();
+        if (projectPath == null) {
             return null;
         }
-        
-        String projectPath = projectRoot.getPath();
         String filePath = file.getPath();
         
         if (filePath.startsWith(projectPath)) {

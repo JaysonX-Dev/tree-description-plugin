@@ -43,25 +43,28 @@ public class ContextMenuAction extends ActionGroup {
     @NotNull
     @Override
     public AnAction[] getChildren(@Nullable AnActionEvent e) {
-        DefaultActionGroup group = new DefaultActionGroup();
+        java.util.List<AnAction> actions = new java.util.ArrayList<>();
+        
         // 引用已注册的AddAnnotationAction（保留快捷键配置）
         AnAction addAction = com.intellij.openapi.actionSystem.ActionManager.getInstance()
             .getAction("ChineseAnnotations.AddAnnotation");
         if (addAction != null) {
-            group.add(addAction);
+            actions.add(addAction);
         }
-        group.add(new RemoveAnnotationAction());
-        group.addSeparator();
+        actions.add(new RemoveAnnotationAction());
+        actions.add(null); // 分隔符
+        
         // 引用已注册的ExtractCommentAnnotationAction（保留快捷键配置）
         AnAction extractAction = com.intellij.openapi.actionSystem.ActionManager.getInstance()
             .getAction("ChineseAnnotations.ExtractComment");
         if (extractAction != null) {
-            group.add(extractAction);
+            actions.add(extractAction);
         }
-        group.add(new ClearAllAnnotationsAction());
-        group.addSeparator();
-        group.add(new AddFileMatchAction());
-        group.add(new AddPackageMatchAction());
-        return group.getChildren(e);
+        actions.add(new ClearAllAnnotationsAction());
+        actions.add(null); // 分隔符
+        actions.add(new AddFileMatchAction());
+        actions.add(new AddPackageMatchAction());
+        
+        return actions.toArray(new AnAction[0]);
     }
 }

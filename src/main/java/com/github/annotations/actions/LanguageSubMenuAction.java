@@ -38,9 +38,6 @@ public class LanguageSubMenuAction extends ActionGroup {
     @NotNull
     @Override
     public AnAction[] getChildren(@Nullable AnActionEvent e) {
-        DefaultActionGroup group = new DefaultActionGroup();
-        group.add(new SwitchToEnglishAction());
-        group.add(new SwitchToChineseAction());
-        return group.getChildren(e);
+        return new AnAction[]{new SwitchToEnglishAction(), new SwitchToChineseAction()};
     }
 }

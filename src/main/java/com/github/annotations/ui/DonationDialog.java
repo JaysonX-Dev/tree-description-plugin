@@ -92,11 +92,11 @@ public class DonationDialog extends DialogWrapper {
             doc.insertString(doc.getLength(), I18nUtils.getText(project, "项目已开源，欢迎参与贡献 ！\n\n", "Project is open source, welcome to contribute!\n\n"), normalStyle);
             doc.insertString(doc.getLength(), I18nUtils.getText(project, "主项目地址：\n", "Main project address:\n"), normalStyle);
             doc.insertString(doc.getLength(), "GitHub: ", normalStyle);
-            doc.insertString(doc.getLength(), "https://github.com/JaysonX-Dev/tree-description-plugin", linkStyle);
+            doc.insertString(doc.getLength(), "https://github.com/JaysonX-Tech/tree-description-plugin", linkStyle);
             doc.insertString(doc.getLength(), "\n\n", normalStyle);
             doc.insertString(doc.getLength(), I18nUtils.getText(project, "开源映射库地址：\n", "Open source mapping library address:\n"), normalStyle);
             doc.insertString(doc.getLength(), "GitHub: ", normalStyle);
-            doc.insertString(doc.getLength(), "https://github.com/JaysonX-Dev/tree-description-repository", linkStyle);
+            doc.insertString(doc.getLength(), "https://github.com/JaysonX-Tech/tree-description-repository", linkStyle);
             doc.insertString(doc.getLength(), "\n\n", normalStyle);
             doc.insertString(doc.getLength(), I18nUtils.getText(project, "让我们一起打造丰富的开源映射库，\n", "Let's build a rich open source mapping library together,\n"), normalStyle);
             doc.insertString(doc.getLength(), I18nUtils.getText(project, "为开发者提供更好的项目理解工具 ！\n\n", "providing better project understanding tools for developers!\n\n"), normalStyle);
@@ -152,7 +152,7 @@ public class DonationDialog extends DialogWrapper {
     private void openDonationPage() {
         try {
             // 这里可以替换为您的实际捐赠链接
-            String donationUrl = "https://jaysonx-dev.github.io/TreeRemarkPage/TreeRemark.html";
+            String donationUrl = "https://jaysonx-tech.github.io/TreeRemarkPage/TreeRemark.html";
             
             if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
                 Desktop.getDesktop().browse(URI.create(donationUrl));
@@ -168,7 +168,7 @@ public class DonationDialog extends DialogWrapper {
             JOptionPane.showMessageDialog(
                 getContentPane(),
                 I18nUtils.getText(project, "无法打开捐赠页面，请手动访问：\n\n", "Unable to open donation page, please visit manually:\n\n") +
-                "https://jaysonx-dev.github.io/TreeRemarkPage/TreeRemark.html",
+                "https://jaysonx-tech.github.io/TreeRemarkPage/TreeRemark.html",
                 I18nUtils.getText(project, "打开失败", "Open Failed"),
                 JOptionPane.ERROR_MESSAGE
             );
@@ -180,7 +180,7 @@ public class DonationDialog extends DialogWrapper {
      */
     private void openGitHubPage() {
         try {
-            String githubUrl = "https://github.com/JaysonX-Dev/tree-description-repository";
+            String githubUrl = "https://github.com/JaysonX-Tech/tree-description-repository";
             
             if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
                 Desktop.getDesktop().browse(URI.create(githubUrl));
@@ -196,7 +196,7 @@ public class DonationDialog extends DialogWrapper {
             JOptionPane.showMessageDialog(
                 getContentPane(),
                 I18nUtils.getText(project, "无法打开GitHub页面，请手动访问：\n\n", "Unable to open GitHub page, please visit manually:\n\n") +
-                "https://github.com/JaysonX-Dev/tree-description-repository",
+                "https://github.com/JaysonX-Tech/tree-description-repository",
                 I18nUtils.getText(project, "打开失败", "Open Failed"),
                 JOptionPane.ERROR_MESSAGE
             );

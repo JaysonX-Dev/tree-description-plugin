@@ -2,8 +2,6 @@ package com.github.annotations.services;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileEvent;
-import com.intellij.openapi.vfs.VirtualFileListener;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
 import com.intellij.openapi.vfs.newvfs.events.VFileContentChangeEvent;
@@ -17,7 +15,7 @@ import java.util.List;
  * JSON文件监听器
  * 监听IDEA内部对mappings目录下所有JSON文件的修改，实时更新备注显示
  */
-public class JsonFileWatcher implements VirtualFileListener, BulkFileListener {
+public class JsonFileWatcher implements BulkFileListener {
     
     private static final String MAPPINGS_DIR_NAME = "mappings";
     
@@ -35,8 +33,7 @@ public class JsonFileWatcher implements VirtualFileListener, BulkFileListener {
         this.messageBusConnection = project.getMessageBus().connect();
         this.messageBusConnection.subscribe(VirtualFileManager.VFS_CHANGES, this);
         
-        // 同时注册为VirtualFileListener
-        VirtualFileManager.getInstance().addVirtualFileListener(this);
+
         
         // 记录初始化成功
         com.intellij.openapi.diagnostic.Logger.getInstance(JsonFileWatcher.class)
@@ -50,6 +47,8 @@ public class JsonFileWatcher implements VirtualFileListener, BulkFileListener {
         if (messageBusConnection != null) {
             messageBusConnection.disconnect();
         }
+        
+
     }
     
     /**
@@ -70,18 +69,20 @@ public class JsonFileWatcher implements VirtualFileListener, BulkFileListener {
     }
     
     /**
-     * 处理文件内容变化事件
+     * 处理文件变化事件（包括创建、修改、删除）
      */
     @Override
     public void after(@NotNull List<? extends VFileEvent> events) {
         for (VFileEvent event : events) {
-            if (event instanceof VFileContentChangeEvent) {
-                VirtualFile file = event.getFile();
-                if (isOurJsonFile(file)) {
-                    // 延迟处理，避免频繁刷新
-                    com.intellij.openapi.application.ApplicationManager.getApplication()
-                        .invokeLater(() -> handleJsonFileChanged(file));
-                }
+            VirtualFile file = event.getFile();
+            if (isOurJsonFile(file)) {
+                // 记录文件变化类型
+                com.intellij.openapi.diagnostic.Logger.getInstance(JsonFileWatcher.class)
+                    .info("BulkFileListener检测到文件变化: " + event.getClass().getSimpleName() + " - " + file.getPath());
+                
+                // 延迟处理，避免频繁刷新
+                com.intellij.openapi.application.ApplicationManager.getApplication()
+                    .invokeLater(() -> handleJsonFileChanged(file));
             }
         }
     }
@@ -102,38 +103,5 @@ public class JsonFileWatcher implements VirtualFileListener, BulkFileListener {
         }
     }
     
-    /**
-     * 兼容VirtualFileListener接口
-     */
-    @Override
-    public void contentsChanged(@NotNull VirtualFileEvent event) {
-        // 增强文件变化检测
-        VirtualFile file = event.getFile();
-        if (isOurJsonFile(file)) {
-            com.intellij.openapi.diagnostic.Logger.getInstance(JsonFileWatcher.class)
-                .info("VirtualFileListener检测到文件变化: " + file.getPath());
-            
-            // 延迟处理，避免频繁刷新
-            com.intellij.openapi.application.ApplicationManager.getApplication()
-                .invokeLater(() -> handleJsonFileChanged(file));
-        }
-    }
-    
-    @Override
-    public void fileCreated(@NotNull VirtualFileEvent event) {
-        VirtualFile file = event.getFile();
-        if (isOurJsonFile(file)) {
-            com.intellij.openapi.diagnostic.Logger.getInstance(JsonFileWatcher.class)
-                .info("检测到JSON文件创建: " + file.getPath());
-        }
-    }
-    
-    @Override
-    public void fileDeleted(@NotNull VirtualFileEvent event) {
-        VirtualFile file = event.getFile();
-        if (isOurJsonFile(file)) {
-            com.intellij.openapi.diagnostic.Logger.getInstance(JsonFileWatcher.class)
-                .info("检测到JSON文件删除: " + file.getPath());
-        }
-    }
+
 }

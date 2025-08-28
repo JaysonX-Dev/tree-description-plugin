@@ -7,6 +7,7 @@ import com.google.gson.JsonSyntaxException;
 import com.intellij.openapi.diagnostic.Logger;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.startup.StartupManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
@@ -77,6 +78,9 @@ public class AnnotationService {
         loadFromMappingsDirectory();
         // 延迟初始化JSON文件监听器，避免循环依赖
         // setupJsonFileWatcher(); // 移除立即初始化
+        
+        // 注册项目启动监听器（新API方式）
+        registerProjectListener();
     }
     
     /**
@@ -652,12 +656,11 @@ public class AnnotationService {
      */
     @Nullable
     private String getRelativePath(@NotNull VirtualFile file) {
-        com.intellij.openapi.vfs.VirtualFile projectRoot = project.getBaseDir();
-        if (projectRoot == null) {
+        String projectPath = project.getBasePath();
+        if (projectPath == null) {
             return null;
         }
         
-        String projectPath = projectRoot.getPath();
         String filePath = file.getPath();
         
         if (filePath.startsWith(projectPath)) {
@@ -1426,20 +1429,27 @@ public class AnnotationService {
     }
     
     /**
-     * 项目启动监听器，确保服务被正确初始化
+     * 初始化语言设置（由PostStartupActivity调用）
      */
-    public static class ProjectStartupListener implements com.intellij.openapi.project.ProjectManagerListener {
-        @Override
-        public void projectOpened(@NotNull Project project) {
-            // 项目打开时初始化服务
-            AnnotationService service = initializeService(project);
-            // 初始化语言设置
-            if (service != null) {
-                com.github.annotations.utils.LanguageManager.setCurrentLanguage(
-                    com.github.annotations.utils.LanguageManager.Language.fromCode(service.getLanguage())
-                );
-            }
+    public void initializeLanguageSettings() {
+        try {
+            // 项目打开后初始化语言设置
+            com.github.annotations.utils.LanguageManager.setCurrentLanguage(
+                com.github.annotations.utils.LanguageManager.Language.fromCode(this.getLanguage())
+            );
+        } catch (Exception e) {
+            LOG.warn("初始化语言设置失败: " + e.getMessage());
         }
     }
+    
+    /**
+     * 注册项目启动监听器（使用StartupActivity替代已过时的ProjectManagerListener）
+     */
+    private void registerProjectListener() {
+        // 此方法已由PostStartupActivity替代，不再需要内部API调用
+        // 语言设置初始化现在由ProjectInitActivity处理
+    }
+
+
 }
 

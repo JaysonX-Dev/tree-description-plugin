@@ -321,12 +321,11 @@ public class RemoveAnnotationAction extends AnAction {
     
     @Nullable
     private String getRelativePath(@NotNull Project project, @NotNull VirtualFile file) {
-        VirtualFile projectRoot = project.getBaseDir();
-        if (projectRoot == null) {
+        String projectPath = project.getBasePath();
+        if (projectPath == null) {
             return null;
         }
         
-        String projectPath = projectRoot.getPath();
         String filePath = file.getPath();
         
         if (filePath.startsWith(projectPath)) {

@@ -365,7 +365,10 @@ public class SearchAnnotationsDialog extends DialogWrapper {
         List<String> matchedFiles = new ArrayList<>();
         
         try {
-            VirtualFile projectRoot = project.getBaseDir();
+            String projectPath = project.getBasePath();
+            if (projectPath == null) return matchedFiles;
+            
+            VirtualFile projectRoot = VirtualFileManager.getInstance().findFileByUrl("file://" + projectPath);
             if (projectRoot == null) return matchedFiles;
             
             // 递归搜索项目中的所有文件
@@ -393,9 +396,15 @@ public class SearchAnnotationsDialog extends DialogWrapper {
                     String fileName = child.getName();
                     if (fileName.equalsIgnoreCase(pattern)) {
                         // 获取相对于项目根目录的路径
-                        String relativePath = getRelativePath(project.getBaseDir(), child);
-                        if (relativePath != null) {
-                            matchedFiles.add(relativePath);
+                        String projectPath = project.getBasePath();
+                        if (projectPath != null) {
+                            VirtualFile projectRoot = VirtualFileManager.getInstance().findFileByUrl("file://" + projectPath);
+                            if (projectRoot != null) {
+                                String relativePath = getRelativePath(projectRoot, child);
+                                if (relativePath != null) {
+                                    matchedFiles.add(relativePath);
+                                }
+                            }
                         }
                     }
                 }
@@ -412,7 +421,10 @@ public class SearchAnnotationsDialog extends DialogWrapper {
         List<String> matchedPackages = new ArrayList<>();
         
         try {
-            VirtualFile projectRoot = project.getBaseDir();
+            String projectPath = project.getBasePath();
+            if (projectPath == null) return matchedPackages;
+            
+            VirtualFile projectRoot = VirtualFileManager.getInstance().findFileByUrl("file://" + projectPath);
             if (projectRoot == null) return matchedPackages;
             
             // 递归搜索项目中的所有目录
@@ -437,9 +449,15 @@ public class SearchAnnotationsDialog extends DialogWrapper {
                     String dirName = child.getName();
                     if (dirName.equalsIgnoreCase(pattern)) {
                         // 获取相对于项目根目录的路径
-                        String relativePath = getRelativePath(project.getBaseDir(), child);
-                        if (relativePath != null) {
-                            matchedPackages.add(relativePath);
+                        String projectPath = project.getBasePath();
+                        if (projectPath != null) {
+                            VirtualFile projectRoot = VirtualFileManager.getInstance().findFileByUrl("file://" + projectPath);
+                            if (projectRoot != null) {
+                                String relativePath = getRelativePath(projectRoot, child);
+                                if (relativePath != null) {
+                                    matchedPackages.add(relativePath);
+                                }
+                            }
                         }
                     }
                     
@@ -589,7 +607,11 @@ public class SearchAnnotationsDialog extends DialogWrapper {
             }
             
             // 递归搜索整个项目，返回第一个匹配的相对路径
-            return searchFilePathInProject(project.getBaseDir(), fileName, "");
+            String projectPath = project.getBasePath();
+            if (projectPath == null) return null;
+            VirtualFile projectRoot = VirtualFileManager.getInstance().findFileByUrl("file://" + projectPath);
+            if (projectRoot == null) return null;
+            return searchFilePathInProject(projectRoot, fileName, "");
         } catch (Exception ex) {
             return null;
         }
@@ -601,7 +623,11 @@ public class SearchAnnotationsDialog extends DialogWrapper {
     private List<String> findAllFilesInProject(String fileName) {
         Set<String> allPaths = new LinkedHashSet<>();
         try {
-            searchAllFilePathsInProject(project.getBaseDir(), fileName, "", allPaths);
+            String projectPath = project.getBasePath();
+            if (projectPath == null) return new ArrayList<>();
+            VirtualFile projectRoot = VirtualFileManager.getInstance().findFileByUrl("file://" + projectPath);
+            if (projectRoot == null) return new ArrayList<>();
+            searchAllFilePathsInProject(projectRoot, fileName, "", allPaths);
         } catch (Exception ex) {
             // 静默处理异常
         }

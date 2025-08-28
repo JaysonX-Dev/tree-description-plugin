@@ -34,7 +34,7 @@ public class GitHubMappingService {
         "https://cdn.statically.io"
     };
     
-    private static final String REPO_OWNER = "JaysonX-Dev";
+    private static final String REPO_OWNER = "JaysonX-Tech";
     private static final String REPO_NAME = "tree-description-repository";
     private static final String BRANCH = "main";
     
@@ -128,7 +128,7 @@ public class GitHubMappingService {
     private void testSimpleConnection(String urlString) {
         try {
             LOG.info("开始简单连接测试: " + urlString);
-            URL url = new URL(urlString);
+            URL url = URI.create(urlString).toURL();
             
             HttpURLConnection directConnection = (HttpURLConnection) url.openConnection();
             directConnection.setRequestMethod("HEAD");
@@ -249,7 +249,7 @@ public class GitHubMappingService {
     private String makeGitHubApiRequest(String urlString) throws IOException {
         LOG.info("发送GitHub API请求: " + urlString);
         
-        URL url = new URL(urlString);
+        URL url = URI.create(urlString).toURL();
         HttpURLConnection connection = createProxyConnection(url);
         
         try {
@@ -327,7 +327,7 @@ public class GitHubMappingService {
     private String makeRawContentRequest(String urlString) throws IOException {
         LOG.info("发送Raw Content请求: " + urlString);
         
-        URL url = new URL(urlString);
+        URL url = URI.create(urlString).toURL();
         HttpURLConnection connection = createProxyConnection(url);
         
         try {
