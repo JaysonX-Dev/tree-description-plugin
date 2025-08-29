@@ -74,7 +74,7 @@
     ]]></change-notes>
     
     <!-- 最低和最高支持版本 -->
-    <idea-version since-build="231" until-build="243.*"/>
+    <idea-version since-build="231" until-build="252.*"/>
     
     <!-- 插件依赖 -->
     <depends>com.intellij.modules.platform</depends>
@@ -95,27 +95,30 @@
         
         <!-- 项目启动后活动 -->
         <postStartupActivity implementation="com.github.annotations.services.ProjectInitActivity"/>
+        
+        <!-- 通知组 -->
+        <notificationGroup id="Extract.Comment.Notification" displayType="BALLOON"/>
     </extensions>
     
     <!-- 操作（Actions） -->
     <actions>
         <!-- 路径备注设置主菜单组 -->
-        <action id="ChineseAnnotations.ContextMenu" 
-                class="com.github.annotations.actions.ContextMenuAction"
-                text="项目备注操作" 
-                description="项目备注操作菜单"
-                icon="icons/remark.svg">
+        <group id="ChineseAnnotations.ContextMenu" 
+               class="com.github.annotations.actions.ContextMenuAction"
+               text="项目备注操作" 
+               description="项目备注操作菜单"
+               icon="icons/remark.svg">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="EditSource"/>
-        </action>
+        </group>
         
         <!-- 工具菜单 -->
-        <action id="ChineseAnnotations.ToolsMenu" 
-                class="com.github.annotations.actions.ToolsMenuAction"
-                text="备注工具" 
-                description="路径备注工具菜单"
-                icon="icons/remark.svg">
+        <group id="ChineseAnnotations.ToolsMenu" 
+               class="com.github.annotations.actions.ToolsMenuAction"
+               text="备注工具" 
+               description="路径备注工具菜单"
+               icon="icons/remark.svg">
             <add-to-group group-id="ToolsMenu" anchor="first"/>
-        </action>
+        </group>
         
         <!-- 添加备注Action - 支持全局快捷键 -->
         <action id="ChineseAnnotations.AddAnnotation" 
@@ -123,6 +126,13 @@
                 text="添加备注" 
                 description="为选中的文件或目录添加备注">
             <keyboard-shortcut keymap="$default" first-keystroke="alt shift A"/>
+        </action>
+        
+        <!-- 删除备注Action -->
+        <action id="ChineseAnnotations.RemoveAnnotation" 
+                class="com.github.annotations.actions.RemoveAnnotationAction"
+                text="删除备注" 
+                description="删除选中文件或目录的备注">
         </action>
         
         <!-- 搜索备注Action - 支持全局快捷键 -->
@@ -142,5 +152,14 @@
                 description="从Java文件的Javadoc注释中提取第一行作为备注">
             <keyboard-shortcut keymap="$default" first-keystroke="alt shift E"/>
         </action>
+        
+        <!-- 清空所有映射Action -->
+        <action id="ChineseAnnotations.ClearAllMappings" 
+                class="com.github.annotations.actions.ClearAllMappingsAction"
+                text="清空所有映射" 
+                description="清空当前项目的所有路径匹配映射">
+        </action>
+        
+
     </actions>
 </idea-plugin>

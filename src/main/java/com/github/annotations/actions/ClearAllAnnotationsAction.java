@@ -2,7 +2,6 @@ package com.github.annotations.actions;
 
 import com.github.annotations.services.AnnotationService;
 import com.github.annotations.utils.I18nUtils;
-import com.intellij.ide.projectView.ProjectView;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;

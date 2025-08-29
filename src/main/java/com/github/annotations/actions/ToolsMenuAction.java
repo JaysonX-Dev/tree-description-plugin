@@ -4,15 +4,10 @@ import com.github.annotations.services.AnnotationService;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.Separator;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import com.github.annotations.actions.LanguageSubMenuAction;
-import com.github.annotations.actions.ToggleProjectTreeAnnotationsAction;
-import com.github.annotations.actions.ViewMappingsAction;
-import com.github.annotations.actions.BuyMeACoffeeAction;
 
 /**
  * 备注工具菜单组Action

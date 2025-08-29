@@ -153,24 +153,7 @@ public class AddFileMatchDialog extends DialogWrapper {
             savePattern = pattern.substring(1);
         }
         
-        // 检查是否已存在相同的模式（使用保存时的模式进行检查）
-        Map<String, String> existingPatterns = annotationService.getAllFileMatchAnnotations();
-        if (existingPatterns.containsKey(savePattern)) {
-            // 如果已存在，询问是否覆盖（显示保存时的模式）
-            int result = JOptionPane.showConfirmDialog(
-                getContentPane(),
-                I18nUtils.getText(project, 
-                    "文件匹配模式 \"" + savePattern + "\" 已存在，是否覆盖？",
-                    "File match pattern \"" + savePattern + "\" already exists, do you want to overwrite it?"),
-                I18nUtils.getText(project, "确认覆盖", "Confirm Overwrite"),
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.PLAIN_MESSAGE
-            );
-            
-            if (result != JOptionPane.YES_OPTION) {
-                return;
-            }
-        }
+        // 直接覆盖已存在的模式，无需用户确认
         
         // 保存到AnnotationService（使用去掉*.前缀的模式）
         annotationService.setFileMatchAnnotation(savePattern, description);

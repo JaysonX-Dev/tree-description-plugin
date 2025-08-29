@@ -53,17 +53,18 @@ public class ExtractCommentAnnotationAction extends AnAction {
     @Override
     public void update(@NotNull AnActionEvent e) {
         Project project = e.getProject();
-        VirtualFile[] files = e.getData(CommonDataKeys.VIRTUAL_FILE_ARRAY);
-        
-        // 更新Action的显示文本
-        if (project != null) {
-            String text = I18nUtils.getText(project, "提取注释为备注", "Extract Comment as Remark");
-            e.getPresentation().setText(text);
+        if (project == null) {
+            e.getPresentation().setEnabledAndVisible(false);
+            return;
         }
         
-        // 只有选中Java文件时才启用
-        boolean enabled = project != null && files != null && files.length > 0 && hasJavaFiles(files);
-        e.getPresentation().setEnabledAndVisible(enabled);
+        // 始终显示菜单项，不进行任何可见性控制
+        e.getPresentation().setVisible(true);
+        e.getPresentation().setEnabled(true);
+        
+        // 更新Action的显示文本
+        String text = I18nUtils.getText(project, "提取注释为备注", "Extract Comment as Remark");
+        e.getPresentation().setText(text);
     }
     
     @Override

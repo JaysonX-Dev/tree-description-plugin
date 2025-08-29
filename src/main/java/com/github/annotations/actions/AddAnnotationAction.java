@@ -21,7 +21,6 @@ import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.TextEditor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import java.lang.reflect.Method;
 
 
 public class AddAnnotationAction extends AnAction {

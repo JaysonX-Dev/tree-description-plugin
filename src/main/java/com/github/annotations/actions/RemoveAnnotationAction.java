@@ -195,99 +195,19 @@ public class RemoveAnnotationAction extends AnAction {
             return;
         }
         
-        // 检查是否为多选
-        if (isMultipleSelection(e)) {
-            // 多选时，检查是否至少有一个文件有备注
-            VirtualFile[] files = e.getData(CommonDataKeys.VIRTUAL_FILE_ARRAY);
-            if (files == null || files.length == 0) {
-                e.getPresentation().setEnabledAndVisible(false);
-                return;
-            }
-            
-            AnnotationService annotationService = AnnotationService.getInstance(project);
-            boolean hasAnyAnnotation = false;
-            
-            for (VirtualFile file : files) {
-                if (file.isDirectory()) {
-                    if (annotationService.hasPackageAnnotation(file)) {
-                        hasAnyAnnotation = true;
-                        break;
-                    }
-                } else {
-                    if (annotationService.hasAnnotation(file)) {
-                        hasAnyAnnotation = true;
-                        break;
-                    }
-                }
-            }
-            
-            // 始终显示菜单项，但根据是否有备注来启用/禁用
-            e.getPresentation().setVisible(true);
-            e.getPresentation().setEnabled(hasAnyAnnotation);
-            
-            if (hasAnyAnnotation) {
-                // 根据当前语言动态显示菜单文本
-                String currentLanguage = annotationService.getLanguage();
-                if ("en".equals(currentLanguage)) {
-                    e.getPresentation().setText("Remove Annotation");
-                    e.getPresentation().setDescription("Remove user annotations from selected files");
-                } else {
-                    e.getPresentation().setText("删除备注");
-                    e.getPresentation().setDescription("删除选中文件的用户备注");
-                }
-            } else {
-                // 根据当前语言动态显示菜单文本
-                String currentLanguage = annotationService.getLanguage();
-                if ("en".equals(currentLanguage)) {
-                    e.getPresentation().setText("Remove Annotation");
-                    e.getPresentation().setDescription("Selected files have no user annotations to remove");
-                } else {
-                    e.getPresentation().setText("删除备注");
-                    e.getPresentation().setDescription("选中的文件没有用户备注可删除");
-                }
-            }
-            return;
-        }
-        
-        // 单选时，检查文件是否有备注
-        VirtualFile file = getSelectedFile(e);
-        if (file == null) {
-            e.getPresentation().setEnabledAndVisible(false);
-            return;
-        }
-        
-        AnnotationService annotationService = AnnotationService.getInstance(project);
-        boolean hasAnnotation;
-        
-        if (file.isDirectory()) {
-            hasAnnotation = annotationService.hasPackageAnnotation(file);
-        } else {
-            hasAnnotation = annotationService.hasAnnotation(file);
-        }
-        
+        // 始终显示菜单项，不进行任何可见性控制
         e.getPresentation().setVisible(true);
-        e.getPresentation().setEnabled(hasAnnotation);
+        e.getPresentation().setEnabled(true);
         
-        if (hasAnnotation) {
-            // 根据当前语言动态显示菜单文本
-            String currentLanguage = annotationService.getLanguage();
-            if ("en".equals(currentLanguage)) {
-                e.getPresentation().setText("Remove Annotation");
-                e.getPresentation().setDescription("Remove user annotation from this file");
-            } else {
-                e.getPresentation().setText("删除备注");
-                e.getPresentation().setDescription("删除该文件的用户备注");
-            }
+        // 根据当前语言动态显示菜单文本
+        AnnotationService annotationService = AnnotationService.getInstance(project);
+        String currentLanguage = annotationService.getLanguage();
+        if ("en".equals(currentLanguage)) {
+            e.getPresentation().setText("Remove Annotation");
+            e.getPresentation().setDescription("Remove user annotation from selected files");
         } else {
-            // 根据当前语言动态显示菜单文本
-            String currentLanguage = annotationService.getLanguage();
-            if ("en".equals(currentLanguage)) {
-                e.getPresentation().setText("Remove Annotation");
-                e.getPresentation().setDescription("This file has no user annotation to remove");
-            } else {
-                e.getPresentation().setText("删除备注");
-                e.getPresentation().setDescription("该文件没有用户备注可删除");
-            }
+            e.getPresentation().setText("删除备注");
+            e.getPresentation().setDescription("删除选中文件的用户备注");
         }
     }
     
