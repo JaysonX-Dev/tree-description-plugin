@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<idea-plugin>
+<idea-plugin require-restart="true">
     <!-- 插件 ID，必须唯一 -->
     <id>com.github.chinese-annotations</id>
     

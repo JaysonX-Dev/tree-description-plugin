@@ -198,15 +198,9 @@ public class AddAnnotationAction extends AnAction {
             return;
         }
         
-        // 检查是否有有效的文件上下文（包括编辑器上下文）
-        VirtualFile file = getSelectedFile(e);
-        if (file == null) {
-            e.getPresentation().setEnabledAndVisible(false);
-            return;
-        }
-        
-        // 有有效上下文时启用Action
-        e.getPresentation().setEnabledAndVisible(true);
+        // 采用宽松显示策略，始终显示菜单项
+        e.getPresentation().setVisible(true);
+        e.getPresentation().setEnabled(true);
         
         // 根据当前语言动态显示菜单文本
         AnnotationService service = AnnotationService.getInstance(project);
@@ -214,11 +208,14 @@ public class AddAnnotationAction extends AnAction {
             String currentLanguage = service.getLanguage();
             if ("en".equals(currentLanguage)) {
                 e.getPresentation().setText("Add Annotation");
+                e.getPresentation().setDescription("Add user annotation to selected files");
             } else {
                 e.getPresentation().setText("添加备注");
+                e.getPresentation().setDescription("为选中文件添加用户备注");
             }
         } else {
             e.getPresentation().setText("添加备注");
+            e.getPresentation().setDescription("为选中文件添加用户备注");
         }
     }
     
